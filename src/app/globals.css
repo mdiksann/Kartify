@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@layer base {
+  :root {
+    --background: 255 255 255;
+    --foreground: 17 24 39;
+    --muted: 249 250 251;
+    --muted-foreground: 107 114 128;
+    --border: 229 231 235;
+    --border-input: 209 213 219;
+    --primary: 37 99 235;
+    --primary-foreground: 255 255 255;
+    --primary-hover: 29 78 216;
+    --primary-subtle: 239 246 255;
+    --destructive: 220 38 38;
+    --destructive-subtle: 254 242 242;
+    --success: 22 163 74;
+    --warning: 217 119 6;
+    --violet: 124 58 237;
+    --orange: 234 88 12;
+    --radius: 0.5rem;
+  }
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background font-sans text-sm text-foreground antialiased;
+  }
+  :focus-visible {
+    @apply outline-none ring-2 ring-primary ring-offset-2 ring-offset-white;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
