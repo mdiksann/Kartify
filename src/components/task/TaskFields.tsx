@@ -9,6 +9,9 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
+import { DueBadge } from './DueBadge';
+import { PriorityBadge } from './PriorityBadge';
+import { utcDate } from '@/lib/task-indicators';
 import { ConfirmDelete } from '@/components/ConfirmDelete';
 const selectClass =
   'mt-2 h-9 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-900 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600/20 max-md:min-h-11';
@@ -39,6 +42,14 @@ export function TaskFields({
   });
   return (
     <>
+      <div className="mb-4 flex flex-wrap items-center gap-2">
+        <DueBadge
+          dueDate={task.dueDate}
+          isDone={task.column.isDone}
+          today={data.today}
+        />
+        <PriorityBadge priority={task.priority} />
+      </div>
       <form
         className="space-y-4"
         onSubmit={(event) => {
@@ -151,11 +162,7 @@ export function TaskFields({
               type="date"
               min="0001-01-01"
               max="9999-12-31"
-              defaultValue={
-                task.dueDate
-                  ? new Date(task.dueDate).toISOString().slice(0, 10)
-                  : ''
-              }
+              defaultValue={task.dueDate ? utcDate(task.dueDate) : ''}
               disabled={pending || disabled}
               {...errorProps('dueDate')}
               className="mt-2"

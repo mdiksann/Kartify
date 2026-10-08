@@ -25,7 +25,10 @@ export async function addMemberByEmail(input: unknown) {
           where: { email },
           select: { id: true },
         });
-        if (!user) throw new NotFoundError();
+        if (!user)
+          throw new NotFoundError(
+            'No account found for this email. Ask them to register first.',
+          );
         return tx.workspaceMember.create({
           data: { workspaceId: workspace.id, userId: user.id, role },
         });

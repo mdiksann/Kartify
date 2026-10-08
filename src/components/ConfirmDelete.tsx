@@ -77,7 +77,9 @@ export function ConfirmDelete({
                     setError(result.message);
                     return;
                   }
-                  toast.success(`${label.replace('Delete', 'Deleted')}`);
+                  toast.success(
+                    `${label.replace('Delete', 'Deleted').replace('Remove', 'Removed')}`,
+                  );
                   setOpen(false);
                   onDeleted?.();
                 } catch {

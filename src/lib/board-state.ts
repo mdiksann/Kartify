@@ -36,16 +36,4 @@ export function taskNeighbors(
   const index = Math.max(0, Math.min(options.index, tasks.length));
   return { afterId: tasks[index - 1]?.id, beforeId: tasks[index]?.id };
 }
-export function dueState(options: {
-  dueDate: Date | string | null;
-  isDone: boolean;
-  today: string;
-}): 'overdue' | 'today' | 'future' | null {
-  if (!options.dueDate) return null;
-  const date =
-    typeof options.dueDate === 'string'
-      ? options.dueDate.slice(0, 10)
-      : options.dueDate.toISOString().slice(0, 10);
-  if (!options.isDone && date < options.today) return 'overdue';
-  return date === options.today ? 'today' : 'future';
-}
+export { dueState } from './task-indicators';

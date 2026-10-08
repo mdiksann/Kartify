@@ -106,7 +106,7 @@ describe('due date display', () => {
       dueState({ dueDate: '2026-10-08T00:00:00Z', isDone: false, today }),
     ).toBe('today');
     expect(dueState({ dueDate: '2026-10-09', isDone: false, today })).toBe(
-      'future',
+      'soon',
     );
     expect(dueState({ dueDate: '2026-10-07', isDone: true, today })).toBe(
       'future',

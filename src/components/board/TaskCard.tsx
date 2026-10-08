@@ -1,7 +1,8 @@
 'use client';
 import { useSortable } from '@dnd-kit/sortable';
-import { MessageSquare, Flag } from 'lucide-react';
-import { dueState } from '@/lib/board-state';
+import { MessageSquare } from 'lucide-react';
+import { DueBadge } from '@/components/task/DueBadge';
+import { PriorityBadge } from '@/components/task/PriorityBadge';
 import type { TaskView } from '@/lib/task-select';
 import { cn } from '@/lib/utils';
 export function TaskCard({
@@ -20,17 +21,6 @@ export function TaskCard({
     data: { kind: 'task', columnId: task.columnId },
     disabled,
   });
-  const due = dueState({
-    dueDate: task.dueDate,
-    isDone: task.column.isDone,
-    today,
-  });
-  const priorityColors = {
-    LOW: 'bg-gray-100 text-gray-700',
-    MEDIUM: 'bg-blue-50 text-blue-700',
-    HIGH: 'bg-orange-50 text-orange-700',
-    URGENT: 'bg-red-50 text-red-700',
-  };
   return (
     <button
       data-task-id={task.id}
@@ -62,22 +52,12 @@ export function TaskCard({
         )}
       </span>
       {task.dueDate && (
-        <span
-          className={cn(
-            'mt-2 inline-flex rounded-full px-2 py-1 text-xs',
-            due === 'overdue'
-              ? 'bg-red-50 text-red-700'
-              : due === 'today'
-                ? 'bg-amber-50 text-amber-700'
-                : 'text-gray-500',
-          )}
-        >
-          {due === 'overdue'
-            ? 'Overdue · '
-            : due === 'today'
-              ? 'Due today · '
-              : ''}
-          {new Date(task.dueDate).toISOString().slice(0, 10)}
+        <span className="mt-2 block">
+          <DueBadge
+            dueDate={task.dueDate}
+            isDone={task.column.isDone}
+            today={today}
+          />
         </span>
       )}
       {task.description && (
@@ -91,15 +71,7 @@ export function TaskCard({
           {task._count.comments}
           <span className="sr-only"> comments</span>
         </span>
-        <span
-          className={cn(
-            'inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px] font-semibold',
-            priorityColors[task.priority],
-          )}
-        >
-          <Flag aria-hidden="true" className="size-3" />
-          {task.priority.charAt(0) + task.priority.slice(1).toLowerCase()}
-        </span>
+        <PriorityBadge priority={task.priority} />
       </span>
     </button>
   );

@@ -25,10 +25,12 @@ export function Board({
   data,
   slug,
   today,
+  initialTaskId,
 }: {
   data: BoardData;
   slug: string;
   today: string;
+  initialTaskId?: string;
 }) {
   const {
     columns,
@@ -40,7 +42,9 @@ export function Board({
     addTask,
     clearAnnouncement,
   } = useBoardMutations(data, slug);
-  const [selected, setSelected] = useState<string | null>(null);
+  const [selected, setSelected] = useState<string | null>(
+    initialTaskId ?? null,
+  );
   const restoreTask = useRef<string | null>(null);
   useEffect(() => {
     if (!pending && !selected && restoreTask.current) {

@@ -7,6 +7,7 @@ import { projectTargetSchema } from './validation/project';
 import { taskDetailsSchema } from './validation/task';
 import { taskPageSchema } from './validation/comment';
 import { activityPayloadSchema } from './validation/activity';
+import { utcDate } from './task-indicators';
 import { NotFoundError } from './errors';
 export async function readBoard(input: unknown) {
   await requireCurrentUser();
@@ -131,6 +132,7 @@ export async function readTaskDetails(input: unknown) {
     comments,
     activities,
     highlightedComment,
+    today: utcDate(new Date()),
   };
 }
 export type TaskDetailsData = Awaited<ReturnType<typeof readTaskDetails>>;

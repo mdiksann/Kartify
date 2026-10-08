@@ -86,7 +86,7 @@ describe('membership lifecycle, authorization and isolation', () => {
       }),
     ).toMatchObject({
       ok: false,
-      message: 'The requested resource was not found.',
+      message: 'No account found for this email. Ask them to register first.',
     });
     expect(
       (await addMemberByEmail({ slug, email: outsider.email, role: 'OWNER' }))
