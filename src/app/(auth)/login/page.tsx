@@ -1,14 +1,19 @@
 import Link from 'next/link';
-export default function Login() {
+import { AuthForm } from '@/components/auth/AuthForm';
+import { safeNext } from '@/lib/auth-routing';
+export default async function Login({
+  searchParams,
+}: {
+  searchParams: Promise<{ next?: string }>;
+}) {
+  const next = safeNext((await searchParams).next);
   return (
     <>
       <h1 className="text-xl font-semibold">Log in to Kartify</h1>
-      <p className="mt-4 text-sm text-gray-700">
-        Login will be available in a future update.
-      </p>
+      <AuthForm mode="login" next={next} />
       <Link
         className="mt-4 inline-block text-sm text-primary hover:underline"
-        href="/register"
+        href={`/register?next=${encodeURIComponent(next)}`}
       >
         Create an account
       </Link>
