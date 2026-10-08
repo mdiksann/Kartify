@@ -35,6 +35,7 @@ type Workspace = { id: string; name: string; slug: string };
 export function WorkspaceShell({
   workspace,
   workspaces,
+  projects,
   user,
   role,
   collapsed: initialCollapsed,
@@ -42,6 +43,7 @@ export function WorkspaceShell({
 }: {
   workspace: Workspace;
   workspaces: Workspace[];
+  projects: { id: string; name: string }[];
   user: { name: string };
   role: string;
   collapsed: boolean;
@@ -113,6 +115,33 @@ export function WorkspaceShell({
             >
               <item.icon aria-hidden="true" className="size-4 shrink-0" />
               {!rail && item.title}
+            </Link>
+          ))}
+        </nav>
+        <nav aria-label="Projects" className="mt-6 space-y-2">
+          {!rail && (
+            <p className="px-2.5 text-xs font-semibold uppercase text-gray-500">
+              Projects
+            </p>
+          )}
+          {projects.map((project) => (
+            <Link
+              key={project.id}
+              href={`${base}/board/${project.id}`}
+              onClick={() => setMobile(false)}
+              aria-label={rail ? project.name : undefined}
+              aria-current={
+                pathname === `${base}/board/${project.id}` ? 'page' : undefined
+              }
+              className={cn(
+                'flex min-h-11 items-center gap-2.5 rounded-lg px-2.5 text-sm font-medium lg:min-h-9',
+                pathname === `${base}/board/${project.id}`
+                  ? 'bg-blue-600 text-white'
+                  : 'text-gray-700 hover:bg-gray-100',
+              )}
+            >
+              <Columns3 className="size-4 shrink-0" />
+              {!rail && <span className="truncate">{project.name}</span>}
             </Link>
           ))}
         </nav>

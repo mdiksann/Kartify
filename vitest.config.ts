@@ -8,6 +8,8 @@ const alias = {
 };
 export default defineConfig({
   test: {
+    // Real Postgres SSI can conflict on unrelated fixtures in small tables.
+    fileParallelism: false,
     projects: [
       {
         resolve: { alias },

@@ -1,3 +1,4 @@
+import { db } from '@/lib/db';
 import { cookies } from 'next/headers';
 import { workspacePageAccess, userWorkspaces } from '@/lib/workspace-access';
 import { WorkspaceShell } from '@/components/workspace/WorkspaceShell';
@@ -12,6 +13,12 @@ export default async function WorkspaceLayout({
     (await params).slug,
   );
   const workspaces = await userWorkspaces(user.id);
+  const projects = await db.project.findMany({
+    where: { workspaceId: workspace.id },
+    select: { id: true, name: true },
+    orderBy: [{ position: 'asc' }, { id: 'asc' }],
+    take: 100,
+  });
   return (
     <WorkspaceShell
       workspace={{
@@ -20,6 +27,7 @@ export default async function WorkspaceLayout({
         slug: workspace.slug,
       }}
       workspaces={workspaces}
+      projects={projects}
       user={{ name: user.name }}
       role={member.role}
       collapsed={(await cookies()).get('sidebar-collapsed')?.value === 'true'}

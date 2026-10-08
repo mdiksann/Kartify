@@ -31,6 +31,8 @@ model User {
   workspaces    Workspace[]       @relation("WorkspaceCreator")
   assignedTasks Task[]            @relation("TaskAssignee")
   createdTasks  Task[]            @relation("TaskCreator")
+  comments      Comment[]         @relation("CommentAuthor")
+  activities    Activity[]        @relation("ActivityActor")
 }
 
 model Workspace {
@@ -59,7 +61,6 @@ model WorkspaceMember {
   @@index([userId])
 }
 
-// Storage prerequisites for TASK-013 assignment cleanup; feature actions/UI are deferred.
 model Project {
   id          String    @id @default(cuid())
   workspaceId String
@@ -86,6 +87,7 @@ model Column {
   updatedAt DateTime @updatedAt
   tasks     Task[]
 
+  @@unique([projectId, position])
   @@index([projectId])
 }
 
@@ -106,8 +108,50 @@ model Task {
   creator     User         @relation("TaskCreator", fields: [createdBy], references: [id], onDelete: Restrict)
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
+  comments    Comment[]
+  activities  Activity[]
 
+  @@unique([columnId, position])
   @@index([projectId])
   @@index([columnId])
   @@index([assigneeId])
+}
+
+enum ActivityType {
+  TASK_CREATED
+  TASK_UPDATED
+  TASK_MOVED
+  TASK_ASSIGNED
+  TASK_PRIORITY_CHANGED
+  TASK_DUE_DATE_CHANGED
+  COMMENT_ADDED
+  COMMENT_UPDATED
+  COMMENT_DELETED
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  taskId    String
+  authorId  String
+  body      String
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  author    User     @relation("CommentAuthor", fields: [authorId], references: [id], onDelete: Restrict)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([taskId, createdAt, id])
+}
+
+model Activity {
+  id        String       @id @default(cuid())
+  taskId    String
+  actorId   String
+  type      ActivityType
+  data      Json
+  task      Task         @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  actor     User         @relation("ActivityActor", fields: [actorId], references: [id], onDelete: Restrict)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  @@index([taskId, createdAt, id])
 }
