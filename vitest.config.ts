@@ -21,6 +21,8 @@ export default defineConfig({
         resolve: { alias },
         test: {
           name: 'integration',
+          // Auth.js uses extensionless Next imports resolved by the framework.
+          server: { deps: { inline: ['next-auth'] } },
           environment: 'node',
           include: ['tests/integration/**/*.test.ts'],
           globalSetup: ['./tests/integration/setup.ts'],
