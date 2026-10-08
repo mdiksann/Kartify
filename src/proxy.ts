@@ -1,10 +1,40 @@
 import { NextResponse, type NextRequest } from 'next/server';
-// This proxy assigns correlation ids only; authentication is TASK-009.
-export function proxy(request: NextRequest) {
+import { getToken } from 'next-auth/jwt';
+import { db } from '@/lib/db';
+import { authRedirect } from '@/lib/auth-routing';
+// Next.js 16 proxy replaces middleware. This is a convenience redirect only;
+// each page/action independently checks the session and current membership.
+export async function proxy(request: NextRequest) {
   const requestId = crypto.randomUUID();
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set('x-request-id', requestId);
-  const response = NextResponse.next({ request: { headers: requestHeaders } });
+  const path = request.nextUrl.pathname;
+  const guarded =
+    path === '/workspaces' ||
+    path === '/w' ||
+    path.startsWith('/w/') ||
+    path === '/login' ||
+    path === '/register';
+  const token = guarded
+    ? await getToken({
+        req: request,
+        secret: process.env.AUTH_SECRET,
+        secureCookie: process.env.NODE_ENV === 'production',
+      })
+    : null;
+  // A deleted account must not get stuck redirecting between login and selection.
+  const authenticated =
+    !!token?.sub &&
+    !!(await db.user.findUnique({
+      where: { id: token.sub },
+      select: { id: true },
+    }));
+  const destination = guarded
+    ? authRedirect(path, request.nextUrl.search, authenticated)
+    : null;
+  const response = destination
+    ? NextResponse.redirect(new URL(destination, request.url))
+    : NextResponse.next({ request: { headers: requestHeaders } });
   response.headers.set('x-request-id', requestId);
   return response;
 }
