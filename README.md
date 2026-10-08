@@ -1,4 +1,4 @@
-## What is Kartify?
+# What is Kartify?
 
 **Kartify** is a web-based collaborative project management workspace designed to help teams organize, track, and deliver work efficiently through an intuitive visual Kanban board interface.
 
