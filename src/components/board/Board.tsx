@@ -1,4 +1,8 @@
 'use client';
+import Link from 'next/link';
+import { Columns3, CalendarDays, GanttChart } from 'lucide-react';
+import { ProjectSchedule } from './ProjectSchedule';
+import { EmptyState } from '@/components/EmptyState';
 import { useEffect, useRef, useState } from 'react';
 import { useBoardMutations } from './useBoardMutations';
 import {
@@ -26,11 +30,13 @@ export function Board({
   slug,
   today,
   initialTaskId,
+  view = 'board',
 }: {
   data: BoardData;
   slug: string;
   today: string;
   initialTaskId?: string;
+  view?: 'board' | 'timeline' | 'calendar';
 }) {
   const {
     columns,
@@ -98,9 +104,11 @@ export function Board({
     .flatMap((column) => column.tasks)
     .find((task) => task.id === selected);
   return (
-    <div className="space-y-6">
+    <div className="relative space-y-6">
       <header className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-xl font-semibold">{data.project.name}</h1>
+        <h1 className="min-w-0 break-words text-2xl font-semibold tracking-tight">
+          {data.project.name}
+        </h1>
         {manage && (
           <div className="flex flex-wrap gap-2">
             <ProjectControls slug={slug} project={data.project} />
@@ -108,6 +116,39 @@ export function Board({
           </div>
         )}
       </header>
+      <nav
+        aria-label="Project views"
+        className="flex flex-wrap gap-2 border-b border-border pb-3"
+      >
+        {(
+          [
+            { value: 'board', label: 'Board', icon: Columns3 },
+            { value: 'timeline', label: 'Timeline', icon: GanttChart },
+            { value: 'calendar', label: 'Calendar', icon: CalendarDays },
+          ] as const
+        ).map((tab) => (
+          <Link
+            key={tab.value}
+            href={`/w/${slug}/board/${data.project.id}?view=${tab.value}`}
+            aria-current={view === tab.value ? 'page' : undefined}
+            className={`inline-flex min-h-11 items-center gap-2 rounded-md border px-3 text-sm ${view === tab.value ? 'border-border bg-primary-subtle font-medium text-foreground' : 'border-border bg-background text-muted-foreground hover:border-primary'}`}
+          >
+            <tab.icon aria-hidden="true" className="size-4" />
+            {tab.label}
+          </Link>
+        ))}
+      </nav>
+      {view !== 'board' && (
+        <ProjectSchedule
+          columns={columns}
+          view={view}
+          today={today}
+          onOpen={(id) => {
+            clearAnnouncement();
+            setSelected(id);
+          }}
+        />
+      )}
       <p
         role="status"
         aria-live="polite"
@@ -116,80 +157,85 @@ export function Board({
       >
         {selected ? '' : announcement}
       </p>
-      <DndContext
-        id={`board-${data.project.id}`}
-        sensors={sensors}
-        collisionDetection={closestCorners}
-        onDragStart={(event) =>
-          setDragLabel(
-            columns
-              .flatMap((column) => column.tasks)
-              .find((task) => task.id === event.active.id)?.title ??
-              columns.find(
-                (column) => `column-${column.id}` === event.active.id,
-              )?.name ??
-              '',
-          )
-        }
-        onDragCancel={() => setDragLabel(null)}
-        onDragEnd={drop}
-        accessibility={{
-          screenReaderInstructions: {
-            draggable:
-              'Press Space to pick up. Use arrow keys to move. Press Space to drop or Escape to cancel. Press Enter to open a task.',
-          },
-          announcements: {
-            onDragStart: () => 'Picked up. Use arrow keys to move.',
-            onDragOver: () => undefined,
-            onDragEnd: () => undefined,
-            onDragCancel: () => 'Drag cancelled.',
-          },
-        }}
-      >
-        <div className="flex max-w-full items-start gap-3 overflow-x-auto pb-4">
-          <SortableContext
-            items={columns.map((column) => `column-${column.id}`)}
-            strategy={horizontalListSortingStrategy}
-          >
-            {columns.map((column, index) => (
-              <BoardColumn
-                key={column.id}
-                column={column}
-                scope={scope}
-                manage={manage}
-                pending={pending}
-                today={today}
-                actions={{
-                  onOpen: (id) => {
-                    clearAnnouncement();
-                    setSelected(id);
-                  },
-                  onCreate: (title) => addTask(column.id, title),
-                  onReorder: (direction) =>
-                    reorder(column.id, index + (direction === 'left' ? -1 : 1)),
-                }}
+      {view === 'board' && (
+        <DndContext
+          id={`board-${data.project.id}`}
+          sensors={sensors}
+          collisionDetection={closestCorners}
+          onDragStart={(event) =>
+            setDragLabel(
+              columns
+                .flatMap((column) => column.tasks)
+                .find((task) => task.id === event.active.id)?.title ??
+                columns.find(
+                  (column) => `column-${column.id}` === event.active.id,
+                )?.name ??
+                '',
+            )
+          }
+          onDragCancel={() => setDragLabel(null)}
+          onDragEnd={drop}
+          accessibility={{
+            screenReaderInstructions: {
+              draggable:
+                'Press Space to pick up. Use arrow keys to move. Press Space to drop or Escape to cancel. Press Enter to open a task.',
+            },
+            announcements: {
+              onDragStart: () => 'Picked up. Use arrow keys to move.',
+              onDragOver: () => undefined,
+              onDragEnd: () => undefined,
+              onDragCancel: () => 'Drag cancelled.',
+            },
+          }}
+        >
+          <div className="flex max-w-full snap-x snap-proximity items-start gap-3 overflow-x-auto overscroll-x-contain pb-4">
+            <SortableContext
+              items={columns.map((column) => `column-${column.id}`)}
+              strategy={horizontalListSortingStrategy}
+            >
+              {columns.map((column, index) => (
+                <BoardColumn
+                  key={column.id}
+                  column={column}
+                  scope={scope}
+                  manage={manage}
+                  pending={pending}
+                  today={today}
+                  actions={{
+                    onOpen: (id) => {
+                      clearAnnouncement();
+                      setSelected(id);
+                    },
+                    onCreate: (title) => addTask(column.id, title),
+                    onReorder: (direction) =>
+                      reorder(
+                        column.id,
+                        index + (direction === 'left' ? -1 : 1),
+                      ),
+                  }}
+                />
+              ))}
+            </SortableContext>
+            {!columns.length && (
+              <EmptyState
+                title="No columns yet"
+                description={
+                  manage
+                    ? 'Add a column above to start creating tasks.'
+                    : 'Ask an Owner or Admin to add a column.'
+                }
               />
-            ))}
-          </SortableContext>
-          {!columns.length && (
-            <div className="py-10 text-center">
-              <h2 className="text-sm font-semibold">No columns yet</h2>
-              <p className="mt-2 text-xs text-gray-500">
-                {manage
-                  ? 'Add a column to start creating tasks.'
-                  : 'Ask an Owner or Admin to add a column.'}
-              </p>
-            </div>
-          )}
-        </div>
-        <DragOverlay dropAnimation={null}>
-          {dragLabel && (
-            <div className="max-w-xs rounded-lg border border-blue-500 bg-white p-3 text-sm font-medium opacity-90 shadow-sm">
-              {dragLabel}
-            </div>
-          )}
-        </DragOverlay>
-      </DndContext>
+            )}
+          </div>
+          <DragOverlay dropAnimation={null}>
+            {dragLabel && (
+              <div className="max-w-xs rounded-lg border border-primary bg-background p-3 text-sm font-medium opacity-90 shadow-sm">
+                {dragLabel}
+              </div>
+            )}
+          </DragOverlay>
+        </DndContext>
+      )}
       {selected && (
         <TaskDrawer
           key={selected}

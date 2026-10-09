@@ -6,19 +6,22 @@ export function taskChangeEvents(
   before: Pick<
     Task,
     'title' | 'description' | 'priority' | 'assigneeId' | 'dueDate'
-  > & { assignee: { name: string } | null },
+  > & { startDate?: Date | null; assignee: { name: string } | null },
   patch: z.infer<typeof updateTaskSchema>,
   assigneeName: string | null,
 ): ActivityPayload[] {
   const events: ActivityPayload[] = [];
   const changes: {
-    field: 'title' | 'description';
+    field: 'title' | 'description' | 'startDate';
     from: string | null;
     to: string | null;
   }[] = [];
   for (const field of ['title', 'description'] as const)
     if (patch[field] !== undefined && (patch[field] || null) !== before[field])
       changes.push({ field, from: before[field], to: patch[field] || null });
+  const priorStart = before.startDate?.toISOString().slice(0, 10) ?? null;
+  if (patch.startDate !== undefined && patch.startDate !== priorStart)
+    changes.push({ field: 'startDate', from: priorStart, to: patch.startDate });
   if (changes.length) events.push({ type: 'TASK_UPDATED', data: { changes } });
   if (patch.priority !== undefined && patch.priority !== before.priority)
     events.push({

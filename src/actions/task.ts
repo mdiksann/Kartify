@@ -14,6 +14,7 @@ import {
   updateTaskSchema,
   deleteTaskSchema,
   moveTaskSchema,
+  taskScheduleSchema,
 } from '@/lib/validation/task';
 import { ForbiddenError, ValidationError } from '@/lib/errors';
 export async function createTask(input: unknown) {
@@ -29,6 +30,7 @@ export async function createTask(input: unknown) {
         priority,
         assigneeId,
         dueDate,
+        startDate,
       },
       { tx, workspace, user },
     ) => {
@@ -54,6 +56,7 @@ export async function createTask(input: unknown) {
           description: description || null,
           priority,
           assigneeId,
+          startDate: startDate ? new Date(`${startDate}T00:00:00Z`) : null,
           dueDate: dueDate ? new Date(`${dueDate}T00:00:00Z`) : null,
           createdBy: user.id,
           position: await allocatePosition(tx, {
@@ -80,6 +83,16 @@ export async function updateTask(input: unknown) {
       const before = await requireTask(tx, {
         ...values,
         workspaceId: workspace.id,
+      });
+      taskScheduleSchema.parse({
+        startDate:
+          values.startDate === undefined
+            ? before.startDate?.toISOString().slice(0, 10)
+            : values.startDate,
+        dueDate:
+          values.dueDate === undefined
+            ? before.dueDate?.toISOString().slice(0, 10)
+            : values.dueDate,
       });
       let assigneeName: string | null = null;
       if (values.assigneeId) {
@@ -108,6 +121,12 @@ export async function updateTask(input: unknown) {
               : values.description || null,
           priority: values.priority,
           assigneeId: values.assigneeId,
+          startDate:
+            values.startDate === undefined
+              ? undefined
+              : values.startDate
+                ? new Date(`${values.startDate}T00:00:00Z`)
+                : null,
           dueDate:
             values.dueDate === undefined
               ? undefined

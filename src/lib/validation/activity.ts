@@ -15,7 +15,7 @@ export const activityPayloadSchema = z.discriminatedUnion('type', [
       changes: z
         .array(
           z.object({
-            field: z.enum(['title', 'description']),
+            field: z.enum(['title', 'description', 'startDate']),
             ...change.shape,
           }),
         )

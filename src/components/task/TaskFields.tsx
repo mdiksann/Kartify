@@ -1,6 +1,6 @@
 'use client';
 import { useState, useTransition } from 'react';
-import { toast } from 'sonner';
+import { toast } from '@/lib/toast';
 import { Loader2 } from 'lucide-react';
 import { updateTask, deleteTask } from '@/actions/task';
 import { updateTaskSchema, priorities } from '@/lib/validation/task';
@@ -14,7 +14,7 @@ import { PriorityBadge } from './PriorityBadge';
 import { utcDate } from '@/lib/task-indicators';
 import { ConfirmDelete } from '@/components/ConfirmDelete';
 const selectClass =
-  'mt-2 h-9 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-900 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600/20 max-md:min-h-11';
+  'mt-2 h-9 w-full rounded-lg border border-gray-300 bg-background px-3 text-sm text-gray-900 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 max-md:min-h-11';
 export function TaskFields({
   scope,
   data,
@@ -61,6 +61,7 @@ export function TaskFields({
             ...scope,
             ...raw,
             assigneeId: raw.assigneeId || null,
+            startDate: raw.startDate || null,
             dueDate: raw.dueDate || null,
           });
           if (!parsed.success) {
@@ -155,6 +156,20 @@ export function TaskFields({
             </select>
           </div>
           <div>
+            <Label htmlFor="task-start-date">Start date</Label>
+            <Input
+              id="task-start-date"
+              name="startDate"
+              type="date"
+              min="0001-01-01"
+              max="9999-12-31"
+              defaultValue={task.startDate ? utcDate(task.startDate) : ''}
+              disabled={pending || disabled}
+              {...errorProps('startDate')}
+              className="mt-2"
+            />
+          </div>
+          <div>
             <Label htmlFor="task-due-date">Due date</Label>
             <Input
               id="task-due-date"
@@ -179,7 +194,7 @@ export function TaskFields({
           <p
             id="task-field-error"
             role="alert"
-            className="text-xs text-red-600"
+            className="text-xs text-destructive-text"
           >
             {error.message}
           </p>

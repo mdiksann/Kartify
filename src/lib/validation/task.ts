@@ -28,16 +28,38 @@ export const taskFieldsSchema = z.object({
     .optional(),
   priority: z.enum(priorities),
   assigneeId: zId.nullable().optional(),
+  startDate: dateSchema.nullable().optional(),
   dueDate: dateSchema.nullable().optional(),
 });
+export const taskScheduleSchema = z
+  .object({
+    startDate: dateSchema.nullable().optional(),
+    dueDate: dateSchema.nullable().optional(),
+  })
+  .refine(
+    (value) =>
+      !value.startDate || !value.dueDate || value.startDate <= value.dueDate,
+    {
+      path: ['dueDate'],
+      message: 'Due date must be on or after the start date.',
+    },
+  );
 export const taskTargetSchema = projectTargetSchema.extend({ taskId: zId });
-export const createTaskSchema = columnTargetSchema.extend({
-  ...taskFieldsSchema.shape,
-  priority: z.enum(priorities).default('MEDIUM'),
-});
-export const updateTaskSchema = taskTargetSchema.extend(
-  taskFieldsSchema.partial().shape,
-);
+export const createTaskSchema = columnTargetSchema
+  .extend({
+    ...taskFieldsSchema.shape,
+    priority: z.enum(priorities).default('MEDIUM'),
+  })
+  .refine((value) => taskScheduleSchema.safeParse(value).success, {
+    path: ['dueDate'],
+    message: 'Due date must be on or after the start date.',
+  });
+export const updateTaskSchema = taskTargetSchema
+  .extend(taskFieldsSchema.partial().shape)
+  .refine((value) => taskScheduleSchema.safeParse(value).success, {
+    path: ['dueDate'],
+    message: 'Due date must be on or after the start date.',
+  });
 export const deleteTaskSchema = taskTargetSchema.extend({
   confirmation: z.literal('DELETE', { error: 'Confirm task deletion.' }),
 });

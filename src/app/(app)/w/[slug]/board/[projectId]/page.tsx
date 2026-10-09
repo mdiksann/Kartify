@@ -21,7 +21,12 @@ export default async function BoardPage({
       notFound();
     throw error;
   }
-  const target = zId.safeParse((await searchParams).task);
+  const query = await searchParams;
+  const view = z
+    .enum(['board', 'timeline', 'calendar'])
+    .catch('board')
+    .parse(query.view);
+  const target = zId.safeParse(query.task);
   const task = target.success
     ? await db.task.findFirst({
         where: { id: target.data, projectId: data.project.id },
@@ -32,6 +37,7 @@ export default async function BoardPage({
     <Board
       key={task?.id ?? data.project.id}
       initialTaskId={task?.id}
+      view={view}
       data={data}
       slug={scope.slug}
       today={new Date().toISOString().slice(0, 10)}

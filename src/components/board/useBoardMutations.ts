@@ -1,7 +1,7 @@
 'use client';
 import { useOptimistic, useRef, useState, useTransition } from 'react';
 import { arrayMove } from '@dnd-kit/sortable';
-import { toast } from 'sonner';
+import { toast } from '@/lib/toast';
 import { createTask, moveTask } from '@/actions/task';
 import { reorderColumn } from '@/actions/column';
 import {
@@ -129,6 +129,7 @@ export function useBoardMutations(data: BoardData, slug: string) {
       description: null,
       priority: 'MEDIUM' as const,
       assigneeId: null,
+      startDate: null,
       dueDate: null,
       createdBy: data.userId,
       createdAt: now,

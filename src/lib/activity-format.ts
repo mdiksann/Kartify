@@ -7,7 +7,7 @@ export function activitySentence(input: unknown): string {
     case 'TASK_CREATED':
       return `created “${event.data.title}”`;
     case 'TASK_UPDATED':
-      return `updated ${event.data.changes.map((change) => change.field).join(' and ')}`;
+      return `updated ${event.data.changes.map((change) => (change.field === 'startDate' ? 'start date' : change.field)).join(' and ')}`;
     case 'TASK_MOVED':
       return `moved from ${event.data.fromColumn} to ${event.data.toColumn}`;
     case 'TASK_ASSIGNED':

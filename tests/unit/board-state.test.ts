@@ -26,6 +26,7 @@ function fixture(): BoardColumns {
       description: null,
       priority: 'MEDIUM' as const,
       assigneeId: null,
+      startDate: null,
       dueDate: null,
       createdBy: 'author',
       createdAt: now,
