@@ -10,6 +10,7 @@ export async function proxy(request: NextRequest) {
   requestHeaders.set('x-request-id', requestId);
   const path = request.nextUrl.pathname;
   const guarded =
+    path === '/account' ||
     path === '/workspaces' ||
     path === '/w' ||
     path.startsWith('/w/') ||

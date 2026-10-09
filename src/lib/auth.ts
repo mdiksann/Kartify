@@ -46,6 +46,12 @@ export async function getCurrentUser() {
   if (!session?.user?.id) return null;
   return db.user.findUnique({
     where: { id: session.user.id },
-    select: { id: true, name: true, email: true },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      avatarType: true,
+      updatedAt: true,
+    },
   });
 }

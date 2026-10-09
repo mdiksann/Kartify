@@ -25,6 +25,8 @@ it('redirects signed-in auth pages to workspace selection', async () => {
     id: 'user',
     name: 'Alex',
     email: 'alex@example.com',
+    avatar: null,
+    avatarType: null,
     passwordHash: '',
     createdAt: new Date(),
     updatedAt: new Date(),

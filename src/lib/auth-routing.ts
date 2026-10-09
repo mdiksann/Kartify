@@ -10,7 +10,11 @@ export function safeNext(value: unknown): string {
     const url = new URL(value, 'https://kartify.local');
     if (
       url.origin !== 'https://kartify.local' ||
-      !(/^\/w(?:\/|$)/.test(url.pathname) || url.pathname === '/workspaces')
+      !(
+        /^\/w(?:\/|$)/.test(url.pathname) ||
+        url.pathname === '/workspaces' ||
+        url.pathname === '/account'
+      )
     )
       return '/workspaces';
     return url.pathname + url.search;
@@ -23,7 +27,10 @@ export function authRedirect(
   search: string,
   authenticated: boolean,
 ): string | null {
-  if (!authenticated && (path === '/workspaces' || /^\/w(?:\/|$)/.test(path)))
+  if (
+    !authenticated &&
+    (path === '/account' || path === '/workspaces' || /^\/w(?:\/|$)/.test(path))
+  )
     return `/login?next=${encodeURIComponent(path + search)}`;
   if (authenticated && (path === '/login' || path === '/register'))
     return '/workspaces';
