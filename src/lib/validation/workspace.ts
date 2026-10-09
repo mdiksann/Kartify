@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { backgroundNames } from '../workspace-appearance';
 export const roles = ['OWNER', 'ADMIN', 'MEMBER'] as const;
 export const zId = z.string().cuid('Invalid identifier.');
 export const slugSchema = z
@@ -19,4 +20,8 @@ export const renameWorkspaceSchema = workspaceTargetSchema.extend(
 );
 export const deleteWorkspaceSchema = workspaceTargetSchema.extend({
   confirmation: z.literal('DELETE', { error: 'Confirm workspace deletion.' }),
+});
+
+export const workspaceAppearanceSchema = workspaceTargetSchema.extend({
+  background: z.enum(backgroundNames),
 });

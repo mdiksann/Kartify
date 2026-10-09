@@ -7,6 +7,7 @@ import { getCurrentUser } from '@/lib/auth';
 import { AuthError, ConflictError } from '@/lib/errors';
 import {
   workspaceSchema,
+  workspaceAppearanceSchema,
   renameWorkspaceSchema,
   deleteWorkspaceSchema,
 } from '@/lib/validation/workspace';
@@ -112,6 +113,32 @@ export async function deleteWorkspace(input: unknown): Promise<ActionResult> {
     await authLog('Workspace deleted');
     revalidatePath('/w', 'layout');
     revalidatePath('/workspaces');
+    return { ok: true, data: undefined };
+  } catch (error) {
+    return actionFailure(error, '/w/settings');
+  }
+}
+
+export async function updateWorkspaceAppearance(
+  input: unknown,
+): Promise<ActionResult> {
+  try {
+    await requireCurrentUser();
+    const values = workspaceAppearanceSchema.parse(input);
+    await db.$transaction(
+      async (tx) => {
+        const { workspace } = await workspaceAccess(values.slug, {
+          roles: ['OWNER', 'ADMIN'],
+          client: tx,
+        });
+        await tx.workspace.update({
+          where: { id: workspace.id },
+          data: { background: values.background },
+        });
+      },
+      { isolationLevel: 'Serializable' },
+    );
+    revalidatePath(`/w/${values.slug}`, 'layout');
     return { ok: true, data: undefined };
   } catch (error) {
     return actionFailure(error, '/w/settings');
