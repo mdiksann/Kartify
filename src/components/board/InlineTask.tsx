@@ -81,7 +81,11 @@ export function InlineTask({
         }}
       />
       {error && (
-        <p id={errorId} role="alert" className="mt-2 text-xs text-destructive-text">
+        <p
+          id={errorId}
+          role="alert"
+          className="mt-2 text-xs text-destructive-text"
+        >
           {error}
         </p>
       )}

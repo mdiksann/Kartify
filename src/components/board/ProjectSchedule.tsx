@@ -196,7 +196,8 @@ export function ProjectSchedule({
                     dateTime={date}
                     className={cn(
                       'py-3 text-center',
-                      date === today && 'bg-primary font-semibold text-primary-foreground',
+                      date === today &&
+                        'bg-primary font-semibold text-primary-foreground',
                     )}
                   >
                     {i + 1}

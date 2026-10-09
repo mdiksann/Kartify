@@ -130,7 +130,11 @@ export function ColumnControls({
             />
           </div>
           {error && (
-            <p id="column-error" role="alert" className="text-xs text-destructive-text">
+            <p
+              id="column-error"
+              role="alert"
+              className="text-xs text-destructive-text"
+            >
               {error}
             </p>
           )}
