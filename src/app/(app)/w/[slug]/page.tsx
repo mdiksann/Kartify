@@ -1,22 +1,39 @@
 import Link from 'next/link';
+import { ArrowUpRight, Columns3, Home } from 'lucide-react';
+import { EmptyState } from '@/components/EmptyState';
+import { NewProject } from '@/components/project/ProjectControls';
 import { workspacePageAccess } from '@/lib/workspace-access';
 import { readDashboard } from '@/lib/dashboard';
+import { can } from '@/lib/permissions';
 import { TaskRow } from '@/components/task/TaskRow';
+
 export default async function WorkspaceHome({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  await workspacePageAccess(slug);
+  const { user, member } = await workspacePageAccess(slug);
   const data = await readDashboard(slug);
+  const base = `/w/${slug}`;
+  const manage = can(member.role, 'createProject');
   return (
-    <div className="space-y-6">
-      <header>
-        <h1 className="text-xl font-semibold">{data.workspace.name}</h1>
-        <p className="mt-1 text-sm text-gray-500">Workspace progress</p>
+    <div className="space-y-10">
+      <header className="flex flex-wrap items-end justify-between gap-4">
+        <div className="min-w-0">
+          <Home
+            aria-hidden="true"
+            className="mb-5 size-8 text-muted-foreground"
+          />
+          <h1 className="text-3xl font-semibold tracking-tight">Home</h1>
+          <p className="mt-2 break-words text-sm text-muted-foreground">
+            Welcome back, {user.name}. Here’s what’s happening in your
+            workspace.
+          </p>
+        </div>
+        {manage && <NewProject slug={slug} />}
       </header>
-      <dl className="grid grid-cols-2 divide-gray-200 rounded-lg border border-gray-200 md:grid-cols-4">
+      <dl className="grid grid-cols-2 gap-y-6 border-y border-border py-5 md:grid-cols-4">
         {[
           ['Total tasks', data.total],
           ['Done', data.done],
@@ -25,84 +42,125 @@ export default async function WorkspaceHome({
         ].map(([label, value]) => (
           <div
             key={label}
-            className="border-gray-200 p-4 even:border-l md:border-l md:first:border-l-0"
+            className="px-3 first:pl-0 md:border-l md:first:border-l-0"
           >
-            <dt className="text-xs text-gray-500">{label}</dt>
+            <dt className="text-xs text-muted-foreground">{label}</dt>
             <dd
-              className={`mt-1 text-xl font-semibold tabular-nums ${label === 'Overdue' ? 'text-red-600' : 'text-gray-900'}`}
+              className={`mt-2 text-2xl font-medium tabular-nums ${label === 'Overdue' && data.overdueCount > 0 ? 'text-destructive-text' : 'text-foreground'}`}
             >
               {value}
             </dd>
           </div>
         ))}
       </dl>
-      {data.projects.length ? (
-        <section className="space-y-4">
-          <h2 className="text-sm font-semibold">Project progress</h2>
-          {data.projects.map((project) => (
-            <div key={project.id} className="space-y-2">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <Link
-                  href={`/w/${slug}/board/${project.id}`}
-                  className="text-sm font-medium text-primary hover:underline"
-                >
-                  {project.name}
-                </Link>
-                <span className="flex items-center gap-2 text-xs text-gray-500 tabular-nums">
-                  {project.overdue > 0 && (
-                    <span className="rounded-full bg-red-50 px-2 py-1 text-red-700">
-                      {project.overdue} overdue
-                    </span>
-                  )}
-                  {project.done}/{project.total} · {project.percent}%
-                </span>
-              </div>
-              <div
-                role="progressbar"
-                aria-label={`${project.name} progress`}
-                aria-valuemin={0}
-                aria-valuemax={100}
-                aria-valuenow={project.percent}
-                aria-valuetext={`${project.done} of ${project.total} tasks done`}
-                className="h-2 overflow-hidden rounded-full bg-gray-200"
-              >
-                <div
-                  className="h-full rounded-full bg-blue-600"
-                  style={{ width: `${project.percent}%` }}
-                />
-              </div>
-              {project.total === 0 && (
-                <p className="text-xs text-gray-500">
-                  No tasks yet. Open the board to add tasks.
-                </p>
-              )}
-            </div>
-          ))}
-        </section>
-      ) : (
-        <section className="mx-auto max-w-sm px-4 py-10 text-center">
-          <h2 className="text-sm font-semibold">Start your first project</h2>
-          <p className="mt-2 text-xs text-gray-500">
-            Create a project and add tasks to track progress. Members can ask an
-            Owner or Admin to create a project.
-          </p>
-          <Link
-            className="mt-4 inline-block text-sm text-primary hover:underline"
-            href={`/w/${slug}/projects`}
-          >
-            Go to projects
-          </Link>
-        </section>
-      )}
       <section>
-        <h2 className="text-sm font-semibold">Assigned to me</h2>
+        <div className="mb-4 flex items-center justify-between gap-3">
+          <h2 className="text-sm font-semibold">Your projects</h2>
+          <Link
+            href={`${base}/projects`}
+            className="inline-flex min-h-11 items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+          >
+            View all projects
+            <ArrowUpRight aria-hidden="true" className="size-3.5" />
+          </Link>
+        </div>
+        {data.projects.length ? (
+          <>
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+              {data.projects.slice(0, 6).map((project) => (
+                <Link
+                  key={project.id}
+                  href={`${base}/board/${project.id}`}
+                  className="group min-w-0 rounded-lg border border-card-border p-4 transition-colors hover:border-gray-400 hover:bg-muted"
+                >
+                  <Columns3
+                    aria-hidden="true"
+                    className="mb-4 size-5 text-muted-foreground"
+                  />
+                  <h3 className="line-clamp-2 min-h-10 break-words text-sm font-medium">
+                    {project.name}
+                  </h3>
+                  <div className="mb-3 mt-4 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
+                    <span>
+                      {project.done} of {project.total} tasks done
+                    </span>
+                    <span className="tabular-nums">{project.percent}%</span>
+                  </div>
+                  <div
+                    role="progressbar"
+                    aria-label={`${project.name} progress`}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-valuenow={project.percent}
+                    aria-valuetext={`${project.done} of ${project.total} tasks done`}
+                    className="h-1 overflow-hidden rounded-full bg-border"
+                  >
+                    <div
+                      className="h-full rounded-full bg-primary"
+                      style={{ width: `${project.percent}%` }}
+                    />
+                  </div>
+                  {project.overdue > 0 && (
+                    <p className="mt-3 text-xs text-destructive-text">
+                      {project.overdue} overdue
+                    </p>
+                  )}
+                  {project.total === 0 && (
+                    <p className="mt-3 text-xs text-muted-foreground">
+                      Open the board to add your first task.
+                    </p>
+                  )}
+                </Link>
+              ))}
+            </div>
+            {data.projects.length > 6 && (
+              <p className="mt-3 text-xs text-muted-foreground">
+                Showing your first 6 projects. View all projects to see the
+                rest.
+              </p>
+            )}
+          </>
+        ) : (
+          <EmptyState
+            title="Start your first project"
+            description={
+              manage
+                ? 'Give your work a home. Create a project and add your first task.'
+                : 'Ask an Owner or Admin to create a project for your team.'
+            }
+            action={
+              manage ? (
+                <NewProject slug={slug} label="Create project" />
+              ) : (
+                <Link
+                  className="inline-flex min-h-11 items-center rounded-md border px-4 text-sm hover:bg-muted"
+                  href={`${base}/projects`}
+                >
+                  Go to projects
+                </Link>
+              )
+            }
+          />
+        )}
+      </section>
+      <section>
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <h2 className="text-sm font-semibold">Assigned to me</h2>
+          <Link
+            href={`${base}/search?assignee=${user.id}`}
+            className="inline-flex min-h-11 items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+          >
+            View my tasks
+            <ArrowUpRight aria-hidden="true" className="size-3.5" />
+          </Link>
+        </div>
         {data.assignedCount > data.assigned.length && (
-          <p className="mt-2 text-xs text-gray-500">
+          <p className="mb-3 text-xs text-muted-foreground">
             Showing the first {data.assigned.length} assigned tasks.
           </p>
         )}
         {data.assigned.length ? (
-          <ul className="mt-3">
+          <ul className="border-y border-border">
             {data.assigned.map((task) => (
               <TaskRow
                 key={task.id}
@@ -113,9 +171,19 @@ export default async function WorkspaceHome({
             ))}
           </ul>
         ) : (
-          <p className="py-6 text-center text-xs text-gray-500">
-            Nothing assigned to you. Assign tasks from a project board.
-          </p>
+          <EmptyState
+            compact
+            title="Nothing assigned to you"
+            description="Assign a task to yourself from a project board. It will appear here."
+            action={
+              <Link
+                className="inline-flex min-h-11 items-center rounded-md border px-4 text-sm hover:bg-muted"
+                href={`${base}/projects`}
+              >
+                Browse projects
+              </Link>
+            }
+          />
         )}
       </section>
     </div>

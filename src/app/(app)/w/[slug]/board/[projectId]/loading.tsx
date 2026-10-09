@@ -13,7 +13,7 @@ export default function Loading() {
             {[0, 1, 2].map((card) => (
               <div
                 key={card}
-                className="space-y-3 rounded-lg border border-gray-200 bg-white p-3"
+                className="space-y-3 rounded-lg border border-gray-200 bg-background p-3"
               >
                 <Skeleton className="h-5 w-40" />
                 <Skeleton className="h-4 w-20" />

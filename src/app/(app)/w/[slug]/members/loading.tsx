@@ -5,7 +5,15 @@ export default function Loading() {
       <Skeleton className="h-6 w-32" />
       <Skeleton className="h-20 w-full" />
       {[0, 1, 2, 3, 4].map((i) => (
-        <Skeleton key={i} className="h-16 w-full" />
+        <div key={i} className="flex items-center gap-3 border-b py-3">
+          <Skeleton className="size-7 shrink-0 rounded-full" />
+          <div className="flex-1 space-y-2">
+            <Skeleton className="h-4 w-3/4" />
+            <Skeleton className="h-4 w-1/2" />
+          </div>
+          <Skeleton className="h-5 w-16" />
+          <Skeleton className="h-9 w-16" />
+        </div>
       ))}
     </div>
   );

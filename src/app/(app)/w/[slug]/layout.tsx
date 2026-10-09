@@ -28,8 +28,14 @@ export default async function WorkspaceLayout({
       }}
       workspaces={workspaces}
       projects={projects}
-      user={{ name: user.name }}
+      user={{
+        name: user.name,
+        avatarUrl: user.avatarType
+          ? `/api/account/avatar?v=${user.updatedAt.getTime()}`
+          : null,
+      }}
       role={member.role}
+      dark={(await cookies()).get('workspace-theme')?.value === 'dark'}
       collapsed={(await cookies()).get('sidebar-collapsed')?.value === 'true'}
     >
       {children}

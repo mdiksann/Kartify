@@ -1,3 +1,6 @@
+import { EmptyState } from '@/components/EmptyState';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 import { workspacePageAccess } from '@/lib/workspace-access';
 import { readSearch } from '@/lib/search';
 import { SearchControls } from '@/components/search/SearchControls';
@@ -15,7 +18,7 @@ export default async function SearchPage({
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-xl font-semibold">Search</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">Search</h1>
       </header>
       <SearchControls slug={slug} filters={data.filters} options={data} />
       <section aria-label="Search results" aria-live="polite">
@@ -29,10 +32,11 @@ export default async function SearchPage({
           </p>
         )}
         {data.items.length ? (
-          <ul className="mt-3">
+          <ul className="mt-3 space-y-3">
             {data.items.map((task) => (
               <TaskRow
                 key={task.id}
+                outlined
                 task={task}
                 slug={slug}
                 today={data.today}
@@ -40,17 +44,25 @@ export default async function SearchPage({
             ))}
           </ul>
         ) : (
-          <div className="mx-auto max-w-sm px-4 py-10 text-center">
-            <h3 className="text-sm font-semibold">
-              {data.filters.q
+          <EmptyState
+            title={
+              data.filters.q
                 ? `No tasks match “${data.filters.q}”`
-                : 'No tasks found'}
-            </h3>
-            <p className="mt-2 text-xs text-gray-500">
-              Try another search or clear the filters. Create tasks on a project
-              board to see them here.
-            </p>
-          </div>
+                : 'No tasks found'
+            }
+            description="Try another search or open a project board to add tasks."
+            action={
+              Object.values(data.filters).some(Boolean) ? (
+                <Button variant="secondary" asChild className="max-md:min-h-11">
+                  <Link href={`/w/${slug}/search`}>Clear filters</Link>
+                </Button>
+              ) : (
+                <Button variant="secondary" asChild className="max-md:min-h-11">
+                  <Link href={`/w/${slug}/projects`}>Go to projects</Link>
+                </Button>
+              )
+            }
+          />
         )}
       </section>
     </div>

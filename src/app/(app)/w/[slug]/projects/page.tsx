@@ -1,3 +1,4 @@
+import { EmptyState } from '@/components/EmptyState';
 import Link from 'next/link';
 import { db } from '@/lib/db';
 import { workspacePageAccess } from '@/lib/workspace-access';
@@ -22,19 +23,24 @@ export default async function Projects({
   return (
     <div className="space-y-6">
       <header className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-xl font-semibold">Projects</h1>
-        {manage && <NewProject slug={slug} />}
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Projects</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            A place for every project your team is working on.
+          </p>
+        </div>
+        {manage && <NewProject slug={slug} iconOnly />}
       </header>
       {projects.length ? (
-        <ul className="divide-y divide-gray-100">
+        <ul className="space-y-3">
           {projects.map((project) => (
             <li
               key={project.id}
-              className="flex flex-wrap items-center justify-between gap-3 py-4"
+              className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-card-border bg-background px-4 py-3"
             >
               <Link
                 href={`/w/${slug}/board/${project.id}`}
-                className="text-sm font-medium text-primary hover:underline"
+                className="min-w-0 flex-1 break-words text-sm font-medium text-primary hover:underline max-md:block max-md:min-h-11 max-md:py-3"
               >
                 {project.name}
               </Link>
@@ -45,14 +51,19 @@ export default async function Projects({
           ))}
         </ul>
       ) : (
-        <div className="py-10 text-center">
-          <h2 className="text-sm font-semibold">No projects yet</h2>
-          <p className="mt-2 text-xs text-gray-500">
-            {manage
+        <EmptyState
+          title="No projects yet"
+          description={
+            manage
               ? 'Create a project to start organizing tasks.'
-              : 'Ask an Owner or Admin to create a project.'}
-          </p>
-        </div>
+              : 'Ask an Owner or Admin to create a project.'
+          }
+          action={
+            manage ? (
+              <NewProject slug={slug} label="Create project" />
+            ) : undefined
+          }
+        />
       )}
     </div>
   );

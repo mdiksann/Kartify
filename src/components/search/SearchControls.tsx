@@ -12,7 +12,7 @@ import {
   type SearchFilters,
 } from '@/lib/validation/search';
 const selectClass =
-  'mt-2 h-9 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm focus-visible:ring-2 focus-visible:ring-blue-600 max-md:min-h-11';
+  'mt-2 h-9 w-full rounded-lg border border-gray-300 bg-background px-3 text-sm focus-visible:ring-2 focus-visible:ring-primary max-md:min-h-11';
 export function SearchControls({
   slug,
   filters,
@@ -210,7 +210,7 @@ export function SearchControls({
         )}
       </div>
       {error && (
-        <p role="alert" className="text-sm text-red-600">
+        <p role="alert" className="text-sm text-destructive-text">
           {error}
         </p>
       )}

@@ -11,7 +11,9 @@ export default async function Settings({
   return (
     <div className="max-w-lg space-y-6">
       <header>
-        <h1 className="text-xl font-semibold">Workspace settings</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">
+          Workspace settings
+        </h1>
       </header>
       <section>
         <h2 className="text-sm font-semibold">Workspace name</h2>

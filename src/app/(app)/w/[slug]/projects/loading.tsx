@@ -7,7 +7,7 @@ export default function Loading() {
       aria-label="Loading projects"
     >
       <Skeleton className="h-6 w-40" />
-      {[0, 1, 2].map((i) => (
+      {[0, 1, 2, 3, 4].map((i) => (
         <Skeleton key={i} className="h-11 w-full" />
       ))}
     </div>

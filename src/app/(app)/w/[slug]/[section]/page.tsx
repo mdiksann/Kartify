@@ -18,7 +18,7 @@ export default async function WorkspaceSection({
   return (
     <>
       <header>
-        <h1 className="text-xl font-semibold">{title}</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
       </header>
       <p className="py-10 text-center text-sm text-gray-500">
         This section will be available in a future update.

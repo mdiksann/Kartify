@@ -1,7 +1,7 @@
 'use client';
 import { useState, useTransition } from 'react';
-import { toast } from 'sonner';
-import { Pencil, Loader2 } from 'lucide-react';
+import { toast } from '@/lib/toast';
+import { Pencil, Loader2, Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import {
   createProjectForm,
@@ -25,11 +25,28 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-export function NewProject({ slug }: { slug: string }) {
+export function NewProject({
+  slug,
+  label = 'New project',
+  iconOnly = false,
+}: {
+  slug: string;
+  label?: string;
+  iconOnly?: boolean;
+}) {
+  const [open, setOpen] = useState(false);
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="rounded-lg max-md:min-h-11">New project</Button>
+        <Button
+          aria-label={iconOnly ? label : undefined}
+          title={iconOnly ? label : undefined}
+          className={
+            iconOnly ? 'size-11 rounded-md p-0' : 'rounded-lg max-md:min-h-11'
+          }
+        >
+          {iconOnly ? <Plus aria-hidden="true" /> : label}
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -39,12 +56,18 @@ export function NewProject({ slug }: { slug: string }) {
           </DialogDescription>
         </DialogHeader>
         <ActionForm
-          action={createProjectForm}
+          action={async (state, form) => {
+            const result = await createProjectForm(state, form);
+            if (result?.ok) {
+              toast.success('Project created');
+              setOpen(false);
+            }
+            return result;
+          }}
           schema={createProjectSchema}
           hidden={{ slug }}
           fields={[{ name: 'name', label: 'Project name', maxLength: 80 }]}
           label="Create project"
-          success="Project created"
         />
       </DialogContent>
     </Dialog>
@@ -67,9 +90,13 @@ export function ProjectControls({
     <div className="flex flex-wrap gap-2">
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button variant="secondary" aria-label={`Rename ${project.name}`}>
-            <Pencil />
-            Rename
+          <Button
+            variant="secondary"
+            className="size-11 shrink-0 p-0"
+            aria-label={`Rename ${project.name}`}
+            title={`Rename ${project.name}`}
+          >
+            <Pencil aria-hidden="true" />
           </Button>
         </DialogTrigger>
         <DialogContent>
@@ -124,7 +151,7 @@ export function ProjectControls({
               <p
                 id="project-name-error"
                 role="alert"
-                className="text-xs text-red-600"
+                className="text-xs text-destructive-text"
               >
                 {error}
               </p>
@@ -142,6 +169,7 @@ export function ProjectControls({
       <ConfirmDelete
         name={project.name}
         label="Delete project"
+        iconOnly
         description="All columns, tasks, comments and history will be permanently deleted."
         action={() =>
           deleteProject({ slug, projectId: project.id, confirmation: 'DELETE' })

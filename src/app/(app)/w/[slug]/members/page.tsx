@@ -25,14 +25,16 @@ export default async function MembersPage({
   const manage = can(actor.role, 'addMember');
   return (
     <div className="space-y-6">
-      <header>
-        <h1 className="text-xl font-semibold">Members</h1>
-        <p className="mt-1 text-sm text-gray-500">
-          People with access to this workspace.
-        </p>
+      <header className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Members</h1>
+          <p className="mt-1 text-sm text-gray-500">
+            People with access to this workspace.
+          </p>
+        </div>
+        {manage && <AddMember slug={slug} />}
       </header>
-      {manage && <AddMember slug={slug} />}
-      <div className="relative overflow-x-auto rounded-lg border border-gray-200">
+      <div className="relative overflow-x-auto rounded-lg border border-card-border">
         <table className="w-full text-left text-sm max-md:block">
           <caption className="sr-only">Workspace members and roles</caption>
           <thead className="bg-gray-50 text-xs text-gray-500 max-md:sr-only">
@@ -50,10 +52,12 @@ export default async function MembersPage({
             {members.map((member) => (
               <tr
                 key={member.id}
-                className="border-t border-gray-100 max-md:block max-md:py-2"
+                className="border-t border-border max-md:block max-md:py-2"
               >
                 <td className="px-4 py-3 max-md:block max-md:py-2">
-                  <span className="block font-medium">{member.user.name}</span>
+                  <span className="block break-all font-medium">
+                    {member.user.name}
+                  </span>
                   <span className="break-all text-xs text-gray-500">
                     {member.user.email}
                   </span>
@@ -78,7 +82,7 @@ export default async function MembersPage({
                       </span>
                     ) : (
                       <MemberControls
-                        key={`${member.id}-${member.role}`}
+                        key={member.id}
                         slug={slug}
                         member={{ ...member, role: member.role }}
                       />
