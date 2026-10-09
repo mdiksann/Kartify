@@ -102,7 +102,7 @@ export function TaskDrawer({
       }}
     >
       <SheetContent
-        className="flex w-full flex-col p-0 sm:max-w-md"
+        className="flex w-full flex-col p-0 sm:max-w-md [&>button]:right-3 [&>button]:top-3"
         onCloseAutoFocus={(event) => {
           event.preventDefault();
           document
@@ -110,8 +110,10 @@ export function TaskDrawer({
             ?.focus();
         }}
       >
-        <SheetHeader className="shrink-0 border-b border-gray-200 p-5 pr-12">
-          <SheetTitle>{ready?.data.task.title ?? fallbackTitle}</SheetTitle>
+        <SheetHeader className="shrink-0 border-b border-gray-200 p-5 pr-16">
+          <SheetTitle className="break-words text-xl tracking-tight">
+            {ready?.data.task.title ?? fallbackTitle}
+          </SheetTitle>
           <SheetDescription>
             Task details, discussion and history.
           </SheetDescription>
@@ -130,11 +132,30 @@ export function TaskDrawer({
               <Skeleton className="h-9 w-full" />
               <Skeleton className="h-24 w-full" />
               <Skeleton className="h-9 w-full" />
+              {['Comments', 'Activity'].map((section) => (
+                <div
+                  key={section}
+                  role="group"
+                  aria-label={`Loading ${section.toLowerCase()}`}
+                  className="space-y-3 pt-6"
+                >
+                  <Skeleton className="h-5 w-24" />
+                  {[0, 1, 2].map((entry) => (
+                    <div key={entry} className="flex gap-3">
+                      <Skeleton className="size-7 shrink-0 rounded-full" />
+                      <div className="flex-1 space-y-2">
+                        <Skeleton className="h-4 w-3/4" />
+                        <Skeleton className="h-4 w-full" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ))}
             </div>
           )}
           {state.status === 'error' && (
             <div className="space-y-3">
-              <p role="alert" className="text-sm text-red-600">
+              <p role="alert" className="text-sm text-destructive-text">
                 {state.message}
               </p>
               <Button

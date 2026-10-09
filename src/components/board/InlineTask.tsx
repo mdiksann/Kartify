@@ -58,7 +58,7 @@ export function InlineTask({
         aria-invalid={!!error}
         aria-describedby={error ? errorId : undefined}
         maxLength={200}
-        className="border-blue-600 ring-2 ring-blue-600/20"
+        className="border-primary ring-2 ring-primary/20"
         onBlur={() => {
           if (saving) return;
           setEditing(false);
@@ -81,7 +81,7 @@ export function InlineTask({
         }}
       />
       {error && (
-        <p id={errorId} role="alert" className="mt-2 text-xs text-red-600">
+        <p id={errorId} role="alert" className="mt-2 text-xs text-destructive-text">
           {error}
         </p>
       )}
@@ -94,11 +94,12 @@ export function InlineTask({
       ref={addButton}
       variant="ghost"
       disabled={disabled}
-      className="w-full justify-start rounded-lg max-md:min-h-11"
+      className="size-11 rounded-md p-0"
+      aria-label="Add task"
+      title="Add task"
       onClick={() => setEditing(true)}
     >
-      <Plus />
-      Add task
+      <Plus aria-hidden="true" />
     </Button>
   );
 }

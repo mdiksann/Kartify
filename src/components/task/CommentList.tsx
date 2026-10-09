@@ -1,6 +1,7 @@
 'use client';
+import { EmptyState } from '@/components/EmptyState';
 import { useState, useTransition } from 'react';
-import { toast } from 'sonner';
+import { toast } from '@/lib/toast';
 import { Loader2 } from 'lucide-react';
 import { createComment } from '@/actions/comment';
 import { listComments } from '@/actions/board';
@@ -95,7 +96,7 @@ export function CommentList({
         <p
           id="comment-list-error"
           role="alert"
-          className="text-xs text-red-600"
+          className="text-xs text-destructive-text"
         >
           {error.message}
         </p>
@@ -113,9 +114,19 @@ export function CommentList({
           ))}
         </ul>
       ) : (
-        <p className="py-6 text-center text-xs text-gray-500">
-          No comments yet. Start the discussion above.
-        </p>
+        <EmptyState
+          compact
+          title="No comments yet"
+          description="Start the discussion with your first comment."
+          action={
+            <Button
+              variant="secondary"
+              onClick={() => document.getElementById('comment-body')?.focus()}
+            >
+              Write a comment
+            </Button>
+          }
+        />
       )}
       {page.nextCursor && (
         <Button

@@ -31,12 +31,14 @@ export function TaskCard({
       disabled={disabled}
       aria-label={`Open task ${task.title}. ${task.column.name}. ${task.priority.toLowerCase()} priority`}
       className={cn(
-        'relative w-full touch-pan-y rounded-lg border border-gray-200 bg-white p-3 text-left transition-colors hover:border-gray-300 focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2',
-        isDragging && 'opacity-60 ring-2 ring-blue-500/40',
+        'relative w-full touch-pan-y rounded-md border border-card-border bg-background p-3 text-left transition-colors hover:border-gray-400 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
+        isDragging && 'opacity-60 ring-2 ring-primary/30',
       )}
     >
       <span className="flex items-start justify-between gap-2">
-        <span className="line-clamp-2 text-sm font-medium">{task.title}</span>
+        <span className="min-w-0 break-words line-clamp-2 text-sm font-medium">
+          {task.title}
+        </span>
         {task.assignee && (
           <span
             aria-label={`Assigned to ${task.assignee.name}`}
@@ -61,11 +63,11 @@ export function TaskCard({
         </span>
       )}
       {task.description && (
-        <span className="mt-2 line-clamp-2 text-xs text-gray-500">
+        <span className="mt-2 break-words line-clamp-2 text-xs text-gray-500">
           {task.description}
         </span>
       )}
-      <span className="mt-3 flex items-center justify-between border-t border-gray-100 pt-3">
+      <span className="mt-3 flex items-center justify-between border-t border-border pt-3">
         <span className="flex items-center gap-1.5 text-xs text-gray-500">
           <MessageSquare aria-hidden="true" className="size-3.5" />
           {task._count.comments}

@@ -9,10 +9,12 @@ export default async function Register({
   const next = safeNext((await searchParams).next);
   return (
     <>
-      <h1 className="text-xl font-semibold">Create your account</h1>
+      <h1 className="text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">
+        Create your account
+      </h1>
       <AuthForm mode="register" next={next} />
       <Link
-        className="mt-4 inline-block text-sm text-primary hover:underline"
+        className="mt-2 inline-flex min-h-11 items-center text-sm text-primary hover:underline"
         href={`/login?next=${encodeURIComponent(next)}`}
       >
         Log in

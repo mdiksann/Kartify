@@ -1,7 +1,7 @@
 'use client';
 import { useState, useTransition } from 'react';
 import { Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
+import { toast } from '@/lib/toast';
 import { updateComment, deleteComment } from '@/actions/comment';
 import { updateCommentSchema } from '@/lib/validation/comment';
 import type { CommentPage } from '@/lib/board-queries';
@@ -27,7 +27,7 @@ export function CommentItem({
     <li
       id={`comment-${comment.id}`}
       tabIndex={-1}
-      className="space-y-3 rounded-lg border border-gray-200 p-3 focus-visible:ring-2 focus-visible:ring-blue-600"
+      className="space-y-3 rounded-lg border border-card-border p-3 focus-visible:ring-2 focus-visible:ring-primary"
     >
       <div className="flex items-center justify-between gap-2">
         <span className="text-sm font-medium">{comment.author.name}</span>
@@ -109,7 +109,7 @@ export function CommentItem({
         <p
           id={`comment-error-${comment.id}`}
           role="alert"
-          className="text-xs text-red-600"
+          className="text-xs text-destructive-text"
         >
           {error}
         </p>

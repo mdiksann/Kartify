@@ -1,4 +1,5 @@
 'use client';
+import { EmptyState } from '@/components/EmptyState';
 import {
   useSortable,
   SortableContext,
@@ -47,40 +48,34 @@ export function BoardColumn({
     data: { kind: 'lane', columnId: column.id },
     disabled: pending,
   });
-  const color = column.isDone
-    ? 'bg-green-50'
-    : column.name.toLowerCase() === 'in progress'
-      ? 'bg-amber-50'
-      : column.name.toLowerCase() === 'in review'
-        ? 'bg-violet-50'
-        : 'bg-gray-50';
+  const color = 'border border-card-border bg-background';
   const pill = column.isDone
-    ? 'bg-green-600 text-white'
+    ? 'bg-green-100 text-green-800'
     : column.name.toLowerCase() === 'in progress'
-      ? 'bg-amber-400 text-gray-900'
+      ? 'bg-amber-100 text-amber-800'
       : column.name.toLowerCase() === 'in review'
-        ? 'bg-violet-600 text-white'
+        ? 'bg-violet-100 text-violet-800'
         : 'bg-gray-200 text-gray-700';
   return (
     <section
       ref={setColumnRef}
       aria-label={`Column: ${column.name}, ${column.tasks.length} tasks`}
       className={cn(
-        'w-[85vw] max-w-xs shrink-0 rounded-lg p-2.5 md:w-[300px]',
+        'w-[85vw] max-w-xs shrink-0 snap-start rounded-lg p-2.5 md:w-[300px]',
         color,
         isDragging && 'opacity-60',
-        isOver && 'ring-1 ring-blue-500/30',
+        isOver && 'ring-1 ring-primary/20',
       )}
     >
       <header className="mb-3 flex items-center justify-between gap-2">
         <h2
           className={cn(
-            'inline-flex min-w-0 items-center gap-1 rounded-full px-2 py-1 text-[11px] font-semibold uppercase',
+            'inline-flex min-w-0 items-center gap-1 rounded px-2 py-1 text-xs font-medium',
             pill,
           )}
         >
           <span className="truncate">{column.name}</span>
-          <span className="rounded-full bg-white/70 px-1.5 text-gray-700">
+          <span className="px-1 text-muted-foreground">
             {column.tasks.length}
           </span>
         </h2>
@@ -94,7 +89,8 @@ export function BoardColumn({
               {...listeners}
               disabled={pending}
               aria-label={`Reorder column ${column.name}`}
-              className="touch-none max-md:size-11"
+              title={`Reorder column ${column.name}`}
+              className="size-11 touch-none"
             >
               <GripVertical />
             </Button>
@@ -123,7 +119,11 @@ export function BoardColumn({
           ))}
         </SortableContext>
         {!column.tasks.length && (
-          <p className="py-6 text-center text-xs text-gray-500">No tasks yet</p>
+          <EmptyState
+            compact
+            title="No tasks yet"
+            description="Add a task below to start this column."
+          />
         )}
         <InlineTask
           scope={{ ...scope, columnId: column.id }}

@@ -1,4 +1,5 @@
 'use client';
+import { EmptyState } from '@/components/EmptyState';
 import { useState, useTransition } from 'react';
 import { Loader2 } from 'lucide-react';
 import { listActivities } from '@/actions/board';
@@ -30,7 +31,7 @@ export function ActivityFeed({
                 {activitySentence(activity.event)}
                 {activity.event.type === 'COMMENT_ADDED' && (
                   <a
-                    className="ml-2 text-primary hover:underline"
+                    className="ml-2 inline-flex min-h-11 items-center text-primary hover:underline"
                     href={`#comment-${activity.event.data.commentId}`}
                     onClick={(event) => {
                       event.preventDefault();
@@ -53,12 +54,14 @@ export function ActivityFeed({
           ))}
         </ul>
       ) : (
-        <p className="py-6 text-center text-xs text-gray-500">
-          No activity yet.
-        </p>
+        <EmptyState
+          compact
+          title="No activity yet"
+          description="Task updates and comments will appear here."
+        />
       )}
       {error && (
-        <p role="alert" className="text-xs text-red-600">
+        <p role="alert" className="text-xs text-destructive-text">
           {error}
         </p>
       )}

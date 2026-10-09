@@ -29,7 +29,7 @@ export function MoveTask({
           <Label htmlFor="move-column">Column</Label>
           <select
             id="move-column"
-            className="mt-2 h-9 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm max-md:min-h-11"
+            className="mt-2 h-9 w-full rounded-lg border border-gray-300 bg-background px-3 text-sm max-md:min-h-11"
             value={target}
             disabled={disabled}
             onChange={(event) => {
@@ -48,7 +48,7 @@ export function MoveTask({
           <Label htmlFor="move-position">Position</Label>
           <select
             id="move-position"
-            className="mt-2 h-9 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm max-md:min-h-11"
+            className="mt-2 h-9 w-full rounded-lg border border-gray-300 bg-background px-3 text-sm max-md:min-h-11"
             value={position}
             disabled={disabled}
             onChange={(event) => setPosition(event.target.value)}

@@ -1,7 +1,7 @@
 'use client';
 import { useState, useTransition } from 'react';
-import { MoreHorizontal, Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
+import { MoreHorizontal, Loader2, Plus } from 'lucide-react';
+import { toast } from '@/lib/toast';
 import {
   createColumn,
   renameColumn,
@@ -53,15 +53,22 @@ export function ColumnControls({
           <Button
             variant="ghost"
             size="icon"
-            className="max-md:size-11"
+            className="size-11"
             aria-label={`Manage column ${column.name}`}
+            title={`Manage column ${column.name}`}
             disabled={disabled}
           >
             <MoreHorizontal />
           </Button>
         ) : (
-          <Button variant="secondary" disabled={disabled}>
-            Add column
+          <Button
+            variant="secondary"
+            className="size-11 p-0"
+            aria-label="Add column"
+            title="Add column"
+            disabled={disabled}
+          >
+            <Plus aria-hidden="true" />
           </Button>
         )}
       </DialogTrigger>
@@ -123,7 +130,7 @@ export function ColumnControls({
             />
           </div>
           {error && (
-            <p id="column-error" role="alert" className="text-xs text-red-600">
+            <p id="column-error" role="alert" className="text-xs text-destructive-text">
               {error}
             </p>
           )}

@@ -30,7 +30,7 @@ export function LogoutButton() {
         )}
       </Button>
       {error && (
-        <p role="alert" className="mt-2 text-xs text-red-600">
+        <p role="alert" className="mt-2 text-xs text-destructive-text">
           {error}
         </p>
       )}

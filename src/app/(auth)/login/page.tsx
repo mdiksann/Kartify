@@ -9,10 +9,12 @@ export default async function Login({
   const next = safeNext((await searchParams).next);
   return (
     <>
-      <h1 className="text-xl font-semibold">Log in to Kartify</h1>
+      <h1 className="text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">
+        Log in to Kartify
+      </h1>
       <AuthForm mode="login" next={next} />
       <Link
-        className="mt-4 inline-block text-sm text-primary hover:underline"
+        className="mt-2 inline-flex min-h-11 items-center text-sm text-primary hover:underline"
         href={`/register?next=${encodeURIComponent(next)}`}
       >
         Create an account
