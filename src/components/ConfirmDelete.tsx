@@ -1,7 +1,7 @@
 'use client';
 import { useState, useTransition } from 'react';
-import { Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
+import { Loader2, Trash2 } from 'lucide-react';
+import { toast } from '@/lib/toast';
 import { Button } from './ui/button';
 import {
   AlertDialog,
@@ -21,6 +21,7 @@ export function ConfirmDelete({
   action,
   onDeleted,
   disabled,
+  iconOnly = false,
 }: {
   name: string;
   label: string;
@@ -28,6 +29,7 @@ export function ConfirmDelete({
   action: () => Promise<ActionResult<unknown>>;
   onDeleted?: () => void;
   disabled?: boolean;
+  iconOnly?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [error, setError] = useState('');
@@ -44,22 +46,29 @@ export function ConfirmDelete({
     >
       <AlertDialogTrigger asChild>
         <Button
-          variant="destructive"
+          variant={iconOnly ? 'outline' : 'destructive'}
           disabled={disabled}
-          className="rounded-lg max-md:min-h-11"
+          aria-label={iconOnly ? label : undefined}
+          aria-description={iconOnly ? name : undefined}
+          title={iconOnly ? `${label} ${name}` : undefined}
+          className={
+            iconOnly
+              ? 'size-11 shrink-0 rounded-md p-0 text-destructive hover:bg-destructive-subtle hover:text-destructive'
+              : 'rounded-lg max-md:min-h-11'
+          }
         >
-          {label}
+          {iconOnly ? <Trash2 aria-hidden="true" /> : label}
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>
+          <AlertDialogTitle className="break-words">
             {label} “{name}”?
           </AlertDialogTitle>
           <AlertDialogDescription>{description}</AlertDialogDescription>
         </AlertDialogHeader>
         {error && (
-          <p role="alert" className="text-sm text-red-600">
+          <p role="alert" className="text-sm text-destructive-text">
             {error}
           </p>
         )}

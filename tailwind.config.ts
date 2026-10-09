@@ -7,6 +7,18 @@ export default {
     extend: {
       fontFamily: { sans: ['var(--font-sans)', 'Arial', 'sans-serif'] },
       colors: {
+        gray: {
+          50: 'rgb(var(--gray-50, 247 247 245) / <alpha-value>)',
+          100: 'rgb(var(--gray-100, 241 241 238) / <alpha-value>)',
+          200: 'rgb(var(--gray-200, 231 231 227) / <alpha-value>)',
+          300: 'rgb(var(--gray-300, 214 214 208) / <alpha-value>)',
+          400: 'rgb(var(--gray-400, 163 163 156) / <alpha-value>)',
+          500: 'rgb(var(--gray-500, 102 102 95) / <alpha-value>)',
+          600: 'rgb(var(--gray-600, 85 85 79) / <alpha-value>)',
+          700: 'rgb(var(--gray-700, 65 65 62) / <alpha-value>)',
+          800: 'rgb(var(--gray-800, 51 51 48) / <alpha-value>)',
+          900: 'rgb(var(--gray-900, 41 41 41) / <alpha-value>)',
+        },
         background: color('background'),
         foreground: color('foreground'),
         border: color('border'),
@@ -20,7 +32,8 @@ export default {
         },
         destructive: {
           DEFAULT: color('destructive'),
-          foreground: color('primary-foreground'),
+          text: color('destructive-text'),
+          foreground: color('destructive-foreground'),
           subtle: color('destructive-subtle'),
         },
         muted: {
@@ -33,7 +46,11 @@ export default {
           DEFAULT: color('background'),
           foreground: color('foreground'),
         },
-        card: { DEFAULT: color('background'), foreground: color('foreground') },
+        card: {
+          DEFAULT: color('background'),
+          foreground: color('foreground'),
+          border: color('border-card'),
+        },
         success: color('success'),
         warning: color('warning'),
         violet: color('violet'),

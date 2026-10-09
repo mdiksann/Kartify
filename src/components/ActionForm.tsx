@@ -1,6 +1,7 @@
 'use client';
 import {
   useActionState,
+  useId,
   useEffect,
   useRef,
   useState,
@@ -8,7 +9,7 @@ import {
 } from 'react';
 import type { z } from 'zod';
 import { Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
+import { toast } from '@/lib/toast';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -20,6 +21,8 @@ type Field = {
   autoComplete?: string;
   maxLength?: number;
   defaultValue?: string;
+  required?: boolean;
+  accept?: string;
 };
 export function ActionForm({
   action,
@@ -38,6 +41,7 @@ export function ActionForm({
   success?: string;
   children?: ReactNode;
 }) {
+  const formId = useId();
   const [state, formAction, pending] = useActionState(action, null);
   const [clientError, setClientError] = useState<FormState>(null);
   const formRef = useRef<HTMLFormElement>(null);
@@ -84,25 +88,25 @@ export function ActionForm({
       ))}
       {fields.map((field) => (
         <div key={field.name}>
-          <Label htmlFor={field.name}>{field.label}</Label>
+          <Label htmlFor={`${formId}-${field.name}`}>{field.label}</Label>
           <Input
             {...field}
-            id={field.name}
-            required
+            id={`${formId}-${field.name}`}
+            required={field.required ?? true}
             disabled={pending}
             className="mt-2 max-md:min-h-11"
             aria-invalid={error?.ok === false && error.field === field.name}
             aria-describedby={
               error?.ok === false && error.field === field.name
-                ? `${field.name}-error`
+                ? `${formId}-${field.name}-error`
                 : undefined
             }
           />
           {error?.ok === false && error.field === field.name && (
             <p
-              id={`${field.name}-error`}
+              id={`${formId}-${field.name}-error`}
               role="alert"
-              className="mt-2 text-xs text-red-600"
+              className="mt-2 text-xs text-destructive-text"
             >
               {error.message}
             </p>
@@ -123,7 +127,7 @@ export function ActionForm({
       <Button
         disabled={pending}
         aria-busy={pending}
-        className="min-w-32 rounded-lg max-md:min-h-11"
+        className="min-w-32 rounded-md max-md:min-h-11"
         type="submit"
       >
         {pending ? (

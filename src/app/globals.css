@@ -4,22 +4,51 @@
 @layer base {
   :root {
     --background: 255 255 255;
-    --foreground: 17 24 39;
-    --muted: 249 250 251;
-    --muted-foreground: 107 114 128;
-    --border: 229 231 235;
-    --border-input: 209 213 219;
-    --primary: 37 99 235;
+    --foreground: 41 41 41;
+    --muted: 247 247 245;
+    --muted-foreground: 102 102 95;
+    --border: 231 231 227;
+    --border-input: 214 214 208;
+    --border-card: 198 198 191;
+    --primary: 41 41 41;
     --primary-foreground: 255 255 255;
-    --primary-hover: 29 78 216;
-    --primary-subtle: 239 246 255;
+    --primary-hover: 65 65 62;
+    --primary-subtle: 241 241 238;
     --destructive: 220 38 38;
+    --destructive-text: 220 38 38;
+    --destructive-foreground: 255 255 255;
     --destructive-subtle: 254 242 242;
     --success: 22 163 74;
     --warning: 217 119 6;
     --violet: 124 58 237;
     --orange: 234 88 12;
     --radius: 0.5rem;
+  }
+  html[data-workspace-theme='dark']:has([data-workspace-shell]) {
+    color-scheme: dark;
+    --background: 24 24 24;
+    --foreground: 235 235 231;
+    --muted: 32 32 31;
+    --muted-foreground: 171 171 163;
+    --border: 62 62 58;
+    --border-input: 85 85 79;
+    --border-card: 85 85 79;
+    --primary: 235 235 231;
+    --primary-foreground: 24 24 24;
+    --primary-hover: 214 214 208;
+    --primary-subtle: 47 47 44;
+    --destructive-subtle: 69 27 27;
+    --destructive-text: 248 113 113;
+    --gray-50: 32 32 31;
+    --gray-100: 47 47 44;
+    --gray-200: 62 62 58;
+    --gray-300: 85 85 79;
+    --gray-400: 140 140 132;
+    --gray-500: 171 171 163;
+    --gray-600: 191 191 184;
+    --gray-700: 214 214 208;
+    --gray-800: 225 225 220;
+    --gray-900: 235 235 231;
   }
   * {
     @apply border-border;
@@ -28,7 +57,25 @@
     @apply bg-background font-sans text-sm text-foreground antialiased;
   }
   :focus-visible {
-    @apply outline-none ring-2 ring-primary ring-offset-2 ring-offset-white;
+    @apply outline-none ring-2 ring-primary ring-offset-2 ring-offset-background;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .scroll-reveal {
+    animation: section-enter 600ms cubic-bezier(0.2, 0.65, 0.3, 1) backwards;
+  }
+  .scroll-reveal:focus-within {
+    animation: none;
+  }
+}
+@keyframes section-enter {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -40,4 +87,26 @@
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+@layer base {
+  @media (max-width: 767px), (pointer: coarse) {
+    button,
+    input:not([type='hidden']):not([type='checkbox']):not([type='radio']),
+    select,
+    textarea,
+    [role='menuitem'] {
+      @apply min-h-11 min-w-11;
+    }
+    [role='dialog'] > button {
+      @apply flex items-center justify-center;
+    }
+  }
+}
+
+html[data-workspace-theme='dark']:has([data-workspace-shell])
+  [data-sonner-toaster] {
+  --normal-bg: rgb(var(--background));
+  --normal-border: rgb(var(--border));
+  --normal-text: rgb(var(--foreground));
 }
