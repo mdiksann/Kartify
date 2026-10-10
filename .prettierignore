@@ -6,3 +6,7 @@ PROJECT_SPEC.md
 ENGINEERING.md
 TASKS.md
 UI_GUIDELINES.md
+
+coverage
+playwright-report
+test-results

@@ -1,4 +1,4 @@
-import { beforeAll, afterAll, describe, expect, it, vi } from 'vitest';
+import { beforeEach, afterEach, describe, expect, it } from 'vitest';
 import {
   db,
   actor,
@@ -9,12 +9,11 @@ import {
 const { createProject } = await import('@/actions/project');
 const { createTask, moveTask } = await import('@/actions/task');
 let f: DomainFixture;
-beforeAll(async () => {
+beforeEach(async () => {
   f = await createDomainFixture();
 });
-afterAll(async () => {
+afterEach(async () => {
   await f.cleanup();
-  vi.unstubAllEnvs();
 });
 async function makeTask(title: string, columnId = f.columns[0]!.id) {
   return dataOf(await createTask({ ...f.scope, columnId, title }));

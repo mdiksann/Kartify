@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { beforeAll, afterAll, describe, expect, it, vi } from 'vitest';
+import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
 import { testDatabaseUrl } from './database-url';
 const runtime = vi.hoisted(() => ({
   user: null as { id: string; name: string; email: string } | null,
@@ -43,7 +43,7 @@ let taskIn: Awaited<ReturnType<typeof createFixture>>['taskIn'];
 function actor(user: typeof owner | null) {
   runtime.user = user;
 }
-beforeAll(async () => {
+beforeEach(async () => {
   fixture = await createFixture(actor);
   ({
     owner,
@@ -61,9 +61,8 @@ beforeAll(async () => {
     taskIn,
   } = fixture);
 });
-afterAll(async () => {
+afterEach(async () => {
   await fixture.cleanup();
-  vi.unstubAllEnvs();
 });
 describe('membership lifecycle, authorization and isolation', () => {
   it('allows admin add by existing normalized email, rejects duplicates/missing users/owner role', async () => {

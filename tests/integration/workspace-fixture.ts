@@ -1,3 +1,4 @@
+import { makeUser, makeProject, makeTask } from '../factories';
 import { db } from '@/lib/db';
 import { createWorkspace } from '@/actions/workspace';
 type PublicUser = { id: string; name: string; email: string };
@@ -6,13 +7,10 @@ export async function createFixture(actor: (user: PublicUser | null) => void) {
   const users: PublicUser[] = [];
   for (const name of ['owner', 'admin', 'member', 'outsider'])
     users.push(
-      await db.user.create({
-        data: {
-          name,
-          email: `${name}-${suffix}@example.com`,
-          passwordHash: 'not-used-for-login',
-        },
-        select: { id: true, name: true, email: true },
+      await makeUser(db, {
+        name,
+        email: `${name}-${suffix}@example.com`,
+        passwordHash: 'not-used-for-login',
       }),
     );
   const [owner, admin, member, outsider] = users as [
@@ -49,21 +47,21 @@ export async function createFixture(actor: (user: PublicUser | null) => void) {
     })
   ).id;
   async function taskIn(workspace: string, assignee: string) {
-    const project = await db.project.create({
-      data: { workspaceId: workspace, name: 'Fixture project', position: 1 },
+    const project = await makeProject(db, {
+      workspaceId: workspace,
+      name: 'Fixture project',
+      position: 1,
     });
     const column = await db.column.create({
       data: { projectId: project.id, name: 'Fixture column', position: 1 },
     });
-    return db.task.create({
-      data: {
-        projectId: project.id,
-        columnId: column.id,
-        createdBy: owner.id,
-        title: 'Fixture task',
-        position: 1,
-        assigneeId: assignee,
-      },
+    return makeTask(db, {
+      projectId: project.id,
+      columnId: column.id,
+      createdBy: owner.id,
+      title: 'Fixture task',
+      position: 1,
+      assigneeId: assignee,
     });
   }
   async function cleanup() {
