@@ -715,6 +715,7 @@ try {
         await expect(
           page.getByRole('alertdialog').getByRole('button', { name: 'Cancel' }),
         ).toBeFocused();
+        await trap(page, page.getByRole('alertdialog'));
         await page.keyboard.press('Escape');
         await expect(page.getByRole('dialog')).toBeVisible();
         await page.keyboard.press('Escape');
