@@ -1,4 +1,4 @@
-import { beforeAll, afterAll, describe, expect, it, vi } from 'vitest';
+import { beforeEach, afterEach, describe, expect, it } from 'vitest';
 import {
   db,
   actor,
@@ -12,7 +12,7 @@ const { createTask } = await import('@/actions/task');
 const { createProject } = await import('@/actions/project');
 let f: DomainFixture;
 let tasks: Awaited<ReturnType<typeof db.task.findMany>>;
-beforeAll(async () => {
+beforeEach(async () => {
   f = await createDomainFixture();
   actor(f.owner);
   const titles = [
@@ -55,9 +55,8 @@ beforeAll(async () => {
     }),
   );
 });
-afterAll(async () => {
+afterEach(async () => {
   await f?.cleanup();
-  vi.unstubAllEnvs();
 });
 describe('workspace search and filters', () => {
   it('matches case-insensitive title OR description and isolates the workspace', async () => {

@@ -1,4 +1,4 @@
-import { beforeAll, afterAll, describe, expect, it, vi } from 'vitest';
+import { beforeEach, afterEach, describe, expect, it } from 'vitest';
 import {
   db,
   actor,
@@ -13,7 +13,7 @@ const { listComments, listActivities, getTaskDetails } =
   await import('@/actions/board');
 let f: DomainFixture;
 let taskId: string;
-beforeAll(async () => {
+beforeEach(async () => {
   f = await createDomainFixture();
   actor(f.member);
   taskId = dataOf(
@@ -24,9 +24,8 @@ beforeAll(async () => {
     }),
   ).id;
 });
-afterAll(async () => {
+afterEach(async () => {
   await f.cleanup();
-  vi.unstubAllEnvs();
 });
 const scope = () => ({ ...f.scope, taskId });
 describe('comments and activity feed', () => {
@@ -275,6 +274,23 @@ describe('comments and activity feed', () => {
       }),
     );
     dataOf(await moveTask({ ...scope(), toColumnId: f.columns[2]!.id }));
+    const prior = dataOf(
+      await createComment({ ...scope(), body: 'Earlier comment' }),
+    );
+    dataOf(
+      await updateComment({
+        ...scope(),
+        commentId: prior.id,
+        body: 'Edited comment',
+      }),
+    );
+    dataOf(
+      await deleteComment({
+        ...scope(),
+        commentId: prior.id,
+        confirmation: 'DELETE',
+      }),
+    );
     const comment = dataOf(
       await createComment({ ...scope(), body: 'Feed link' }),
     );

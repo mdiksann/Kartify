@@ -1,4 +1,4 @@
-import { beforeAll, afterAll, describe, expect, it, vi } from 'vitest';
+import { beforeEach, afterEach, describe, expect, it } from 'vitest';
 import {
   db,
   actor,
@@ -23,12 +23,11 @@ const {
 const { createTask } = await import('@/actions/task');
 const { createComment } = await import('@/actions/comment');
 let f: DomainFixture;
-beforeAll(async () => {
+beforeEach(async () => {
   f = await createDomainFixture();
 });
-afterAll(async () => {
+afterEach(async () => {
   await f.cleanup();
-  vi.unstubAllEnvs();
 });
 describe('projects and columns', () => {
   it('creates ordered projects with default done columns and allows members to list', async () => {
@@ -316,6 +315,11 @@ describe('projects and columns', () => {
     expect(await createProjectForm(null, form)).toEqual({
       ok: true,
       data: undefined,
+    });
+    actor(f.member);
+    expect(await createProjectForm(null, form)).toMatchObject({
+      ok: false,
+      message: 'This action is not allowed.',
     });
   });
 });

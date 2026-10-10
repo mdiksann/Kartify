@@ -8,6 +8,18 @@ const alias = {
 };
 export default defineConfig({
   test: {
+    coverage: {
+      provider: 'v8',
+      include: ['src/lib/**/*.ts'],
+      reporter: ['text', 'json', 'html'],
+      thresholds: {
+        lines: 70,
+        functions: 70,
+        statements: 70,
+        branches: 70,
+        'src/lib/**': { branches: 90 },
+      },
+    },
     // Real Postgres SSI can conflict on unrelated fixtures in small tables.
     fileParallelism: false,
     projects: [
@@ -23,6 +35,8 @@ export default defineConfig({
         resolve: { alias },
         test: {
           name: 'integration',
+          // Real cost-12 bcrypt rate-limit checks perform ten hashes on CI CPUs.
+          testTimeout: 15_000,
           // Auth.js uses extensionless Next imports resolved by the framework.
           server: { deps: { inline: ['next-auth'] } },
           environment: 'node',

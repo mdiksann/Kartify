@@ -7,5 +7,12 @@ export default defineConfig([
   ...nextTypescript,
   prettier,
   { rules: { '@typescript-eslint/no-explicit-any': 'error' } },
-  globalIgnores(['.next/**', 'out/**', 'next-env.d.ts', 'coverage/**']),
+  globalIgnores([
+    '.next/**',
+    'out/**',
+    'next-env.d.ts',
+    'coverage/**',
+    'playwright-report/**',
+    'test-results/**',
+  ]),
 ]);

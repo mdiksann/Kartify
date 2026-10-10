@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { beforeAll, afterAll, beforeEach, expect, it, vi } from 'vitest';
+import { beforeEach, afterEach, afterAll, expect, it, vi } from 'vitest';
 import { compare, hash } from 'bcryptjs';
 import { testDatabaseUrl } from './database-url';
 const runtime = vi.hoisted(() => ({
@@ -26,7 +26,7 @@ function form(values: Record<string, string | File>) {
   for (const [key, value] of Object.entries(values)) data.set(key, value);
   return data;
 }
-beforeAll(async () => {
+beforeEach(async () => {
   user = await db.user.create({
     data: {
       name: 'Alex',
@@ -41,15 +41,13 @@ beforeAll(async () => {
       passwordHash: await hash('other-password', 12),
     },
   });
-});
-beforeEach(() => {
   runtime.user = user;
 });
-afterAll(async () => {
+afterEach(async () => {
   await db.user.deleteMany({ where: { id: { in: [user.id, other.id] } } });
   await db.$disconnect();
-  vi.unstubAllEnvs();
 });
+afterAll(() => vi.unstubAllEnvs());
 it('updates only the signed-in profile, stores photos and serves them privately', async () => {
   expect(
     await updateProfile(
@@ -96,7 +94,7 @@ it('rejects oversized and non-raster uploads without changing the profile', asyn
   ).toMatchObject({ ok: false, field: 'avatar' });
   expect(
     (await db.user.findUniqueOrThrow({ where: { id: user.id } })).name,
-  ).toBe('Updated');
+  ).toBe('Alex');
   expect(
     await updateProfile(null, form({ name: 'Updated', removeAvatar: 'on' })),
   ).toMatchObject({ ok: true });

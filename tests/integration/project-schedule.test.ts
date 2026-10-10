@@ -1,4 +1,4 @@
-import { beforeAll, afterAll, expect, it } from 'vitest';
+import { beforeEach, afterEach, expect, it } from 'vitest';
 import {
   db,
   actor,
@@ -10,10 +10,10 @@ const { createTask, updateTask } = await import('@/actions/task');
 const { updateWorkspaceAppearance } = await import('@/actions/workspace');
 const { readBoard } = await import('@/lib/board-queries');
 let f: DomainFixture;
-beforeAll(async () => {
+beforeEach(async () => {
   f = await createDomainFixture();
 });
-afterAll(async () => {
+afterEach(async () => {
   actor(f.owner);
   await f.cleanup();
 });

@@ -155,3 +155,6 @@ Profile photos are stored in Postgres and served through an authenticated,
 private endpoint. The additive `20261009000000_account_avatar` migration adds
 nullable photo fields to `User`; run `corepack pnpm db:generate` and
 `corepack pnpm db:deploy` when upgrading an existing installation.
+
+Quality checks, test database setup, browser prerequisites and merge protection are
+documented in [docs/TESTING.md](docs/TESTING.md).

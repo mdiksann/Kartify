@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { beforeAll, afterAll, describe, expect, it, vi } from 'vitest';
+import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
 import { testDatabaseUrl } from './database-url';
 const runtime = vi.hoisted(() => ({
   user: null as { id: string; name: string; email: string } | null,
@@ -52,7 +52,7 @@ function form(data: Record<string, string>) {
   for (const [k, v] of Object.entries(data)) result.set(k, v);
   return result;
 }
-beforeAll(async () => {
+beforeEach(async () => {
   fixture = await createFixture(actor);
   ({
     owner,
@@ -67,9 +67,8 @@ beforeAll(async () => {
     taskIn,
   } = fixture);
 });
-afterAll(async () => {
+afterEach(async () => {
   await fixture.cleanup();
-  vi.unstubAllEnvs();
 });
 describe('workspace creation and guards', () => {
   it('bootstraps exactly one owner, creates collision suffixes, and normalizes names', async () => {
@@ -108,6 +107,9 @@ describe('workspace creation and guards', () => {
       before,
     );
     actor(null);
+    expect(
+      await createWorkspaceForm(null, form({ name: 'No session' })),
+    ).toMatchObject({ ok: false });
     expect(await createWorkspace({ name: 'No session' })).toMatchObject({
       ok: false,
       message: 'Please log in to continue.',
@@ -147,6 +149,9 @@ describe('workspace settings authorization and cascade', () => {
       await renameWorkspaceForm(null, form({ slug, name: 'Via form' })),
     ).toMatchObject({ ok: true });
     actor(member);
+    expect(
+      await renameWorkspaceForm(null, form({ slug, name: 'Denied' })),
+    ).toMatchObject({ ok: false, message: 'This action is not allowed.' });
     expect(await renameWorkspace({ slug, name: 'Denied' })).toMatchObject({
       ok: false,
       message: 'This action is not allowed.',

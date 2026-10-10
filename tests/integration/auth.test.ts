@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import {
   beforeAll,
+  afterEach,
   afterAll,
   beforeEach,
   describe,
@@ -8,6 +9,7 @@ import {
   it,
   vi,
 } from 'vitest';
+import { hash } from 'bcryptjs';
 import { testDatabaseUrl } from './database-url';
 const runtime = vi.hoisted(() => ({
   ip: 'auth-test',
@@ -61,12 +63,19 @@ function form(data: Record<string, string>) {
   for (const [k, v] of Object.entries(data)) result.set(k, v);
   return result;
 }
-beforeEach(() => {
+let baselineHash: string;
+beforeEach(async () => {
   runtime.ip = crypto.randomUUID();
   runtime.cookies.clear();
+  await db.user.create({
+    data: { name: 'Alex', email, passwordHash: baselineHash },
+  });
 });
 beforeAll(async () => {
-  await db.$connect();
+  baselineHash = await hash(password, 12);
+});
+afterEach(async () => {
+  await db.user.deleteMany({ where: { email } });
 });
 afterAll(async () => {
   await db.user.deleteMany({ where: { email } });
@@ -75,6 +84,7 @@ afterAll(async () => {
 });
 describe('registration, Auth.js JWT sessions and logout against Postgres', () => {
   it('registers with normalized email and bcrypt cost 12, automatically logs in, and returns no password', async () => {
+    await db.user.deleteMany({ where: { email } });
     await expect(
       register(
         null,
