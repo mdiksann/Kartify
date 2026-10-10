@@ -182,7 +182,14 @@ export function Board({
             },
             announcements: {
               onDragStart: () => 'Picked up. Use arrow keys to move.',
-              onDragOver: () => undefined,
+              onDragOver: ({ over }) => {
+                const column = columns.find(
+                  (item) => item.id === over?.data.current?.columnId,
+                );
+                return column
+                  ? `Over ${column.name}. Press Space to drop.`
+                  : undefined;
+              },
               onDragEnd: () => undefined,
               onDragCancel: () => 'Drag cancelled.',
             },

@@ -92,13 +92,13 @@ test('onboards, edits, mouse and keyboard moves, comments, audits and deletes a 
     await card.focus();
     await page.keyboard.press('Space');
     await expect(card).toHaveAttribute('aria-pressed', 'true');
+    await expect(
+      page.getByRole('status').filter({ hasText: 'Over In Progress.' }),
+    ).toHaveText('Over In Progress. Press Space to drop.');
     await page.keyboard.press('ArrowRight');
-    await page.evaluate(
-      () =>
-        new Promise<void>((resolve) =>
-          requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
-        ),
-    );
+    await expect(
+      page.getByRole('status').filter({ hasText: 'Over Done.' }),
+    ).toHaveText('Over Done. Press Space to drop.');
     await page.keyboard.press('Space');
     await expect(
       page

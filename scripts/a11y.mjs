@@ -715,6 +715,7 @@ try {
         await expect(
           page.getByRole('alertdialog').getByRole('button', { name: 'Cancel' }),
         ).toBeFocused();
+        await trap(page, page.getByRole('alertdialog'));
         await page.keyboard.press('Escape');
         await expect(page.getByRole('dialog')).toBeVisible();
         await page.keyboard.press('Escape');
@@ -986,13 +987,14 @@ try {
   await expect(card).toBeEnabled();
   await tabTo(page, card);
   await page.keyboard.press('Space');
+  await expect(card).toHaveAttribute('aria-pressed', 'true');
+  await expect(
+    page.getByRole('status').filter({ hasText: 'Over To Do.' }),
+  ).toHaveText('Over To Do. Press Space to drop.');
   await page.keyboard.press('ArrowRight');
-  await page.evaluate(
-    () =>
-      new Promise((resolve) =>
-        requestAnimationFrame(() => requestAnimationFrame(resolve)),
-      ),
-  );
+  await expect(
+    page.getByRole('status').filter({ hasText: 'Over In Progress.' }),
+  ).toHaveText('Over In Progress. Press Space to drop.');
   await page.keyboard.press('Space');
   await expect(
     page.getByRole('status').filter({ hasText: /Moved to In Progress/ }),
